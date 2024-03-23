@@ -1,5 +1,5 @@
 <script>
-  import { userUuid } from "../stores/stores.js";
+  import { userUuid } from "../stores/stores.js"
   
   const askSomething = async () => {
     const data = {
