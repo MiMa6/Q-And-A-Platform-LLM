@@ -1,9 +1,18 @@
+import * as coursesService from "./services/coursesService.js";
 import { serve } from "./deps.js";
 import { sql } from "./database/database.js";
 
 
 const handleGetRoot = async (request) => {
   return new Response(`Hello from programmin API server`);
+};
+
+const handleGetCourses = async (request) => {
+  const courses = await coursesService.findAll();
+
+  return new Response(JSON.stringify(courses), {
+    headers: { "content-type": "application/json"},
+  });
 };
 
 const handlePostGenerateAnswer = async (request) => {
@@ -25,6 +34,11 @@ const urlMapping = [
     method: "GET",
     pattern: new URLPattern({ pathname: "/" }),
     fn: handleGetRoot,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({ pathname: "/courses" }),
+    fn: handleGetCourses,
   },
   {
     method: "POST",
