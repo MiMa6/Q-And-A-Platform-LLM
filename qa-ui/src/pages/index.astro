@@ -1,8 +1,10 @@
 ---
 import Layout from "../layout/Layout.astro";
-import MainPage from "../components/MainPage.svelte";
+import NavigationRail from "../components/NavigationRail.svelte";
+import MainPage from "./MainPage.svelte";
 ---
 
 <Layout>
+  <NavigationRail client:only={"svelte"} />
   <MainPage client:only={"svelte"} />
 </Layout>

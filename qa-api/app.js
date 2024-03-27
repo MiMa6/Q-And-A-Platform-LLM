@@ -1,7 +1,8 @@
 import * as coursesService from "./services/coursesService.js";
+import * as questionService from "./services/questionService.js";
+
 import { serve } from "./deps.js";
 import { sql } from "./database/database.js";
-
 
 const handleGetRoot = async (request) => {
   return new Response(`Hello from programmin API server`);
@@ -11,7 +12,19 @@ const handleGetCourses = async (request) => {
   const courses = await coursesService.findAll();
 
   return new Response(JSON.stringify(courses), {
-    headers: { "content-type": "application/json"},
+    headers: { "content-type": "application/json" },
+  });
+};
+
+const handlePostQuestions = async (request) => {
+  const requestData = await request.json();
+  const courseID = requestData.courseID;
+  console.log(courseID);
+
+  const questions = await questionService.find(courseID);
+
+  return new Response(JSON.stringify(questions), {
+    headers: { "content-type": "application/json" },
   });
 };
 
@@ -39,6 +52,11 @@ const urlMapping = [
     method: "GET",
     pattern: new URLPattern({ pathname: "/courses" }),
     fn: handleGetCourses,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/questions" }),
+    fn: handlePostQuestions,
   },
   {
     method: "POST",
