@@ -8,10 +8,36 @@ const handleGetRoot = async (request) => {
   return new Response(`Hello from programmin API server`);
 };
 
+const handlePostSpecificCourse = async (request) => {
+  const requestData = await request.json();
+  const courseID = requestData.id;
+
+  const course = await coursesService.find(courseID);
+
+  return new Response(JSON.stringify(course), {
+    headers: { "content-type": "application/json" },
+  });
+};
+
 const handleGetCourses = async (request) => {
   const courses = await coursesService.findAll();
 
   return new Response(JSON.stringify(courses), {
+    headers: { "content-type": "application/json" },
+  });
+};
+
+const handleGetCourseIds = async (request) => {
+  //const headers = new Headers();
+  //headers.set("Access-Control-Allow-Origin", allowedOrigin);
+  //headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Adjust as needed
+  //headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Adjust as needed
+  //headers.set("content-type", "application/json"); // Adjust as needed
+
+  const courseIds = await coursesService.findAllIds();
+  console.log(courseIds);
+  
+  return new Response(JSON.stringify(courseIds), {
     headers: { "content-type": "application/json" },
   });
 };
@@ -49,9 +75,19 @@ const urlMapping = [
     fn: handleGetRoot,
   },
   {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/course" }),
+    fn: handlePostSpecificCourse,
+  },
+  {
     method: "GET",
     pattern: new URLPattern({ pathname: "/courses" }),
     fn: handleGetCourses,
+  },
+  {
+    method: "GET",
+    pattern: new URLPattern({ pathname: "/courseids" }),
+    fn: handleGetCourseIds,
   },
   {
     method: "POST",

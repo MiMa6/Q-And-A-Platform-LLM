@@ -1,13 +1,13 @@
 <script>
   import { onMount } from "svelte";
-  import { courses } from "../stores/courseStore.js";
-  import { questions } from "../stores/questionStore.js";
-  
+  import { courses } from "../../stores/courseStore.js";
+  import { questions } from "../../stores/questionStore.js";
+
+  export let courseId;
 
   const getQuestions = async () => {
     const data = {
-      //ToDo change to dynamic id
-      courseID: 1,
+      courseID: courseId,
     };
 
     const response = await fetch("/api/questions", {
@@ -16,7 +16,6 @@
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-
     });
 
     const jsonData = await response.json();
@@ -25,7 +24,6 @@
   };
 
   onMount(getQuestions);
-  
 </script>
 
 <main
@@ -40,8 +38,6 @@
         class="bg-neutral-10 dark:bg-neutral-900 p-6 md:p-8 border border-gray-200 dark:border-gray-700 rounded-2xl"
       >
         <div class="flex flex-wrap flex-row gap-6 mb-12">
-
-
           <!-- Questions -->
           <section class="p-5">
             <div class="mb-5 flex items-center justify-between">
@@ -58,7 +54,7 @@
               {#each $questions as question}
                 <div class="space-y-2">
                   <a
-                    href="/course{question.id}"
+                    href="/"
                     class="flex space-x-4 rounded-xl bg-white p-3 shadow-sm hover:bg-primary-100"
                   >
                     <div>

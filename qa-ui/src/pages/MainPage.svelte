@@ -62,7 +62,7 @@
               {#each $courses as course}
                 <div class="space-y-2">
                   <a
-                    href="/course{course.id}"
+                    href="/courses/{course.id}"
                     class="flex space-x-4 rounded-xl bg-white p-3 shadow-sm hover:bg-primary-100"
                   >
                     <div>

@@ -1,0 +1,12 @@
+---
+import Layout from "../../layout/Layout.astro";
+import NavigationRail from "../../components/NavigationRail.svelte";
+import CoursePage from "./CoursePage.svelte";
+
+const { slug } = Astro.params;
+---
+
+<Layout>
+  <NavigationRail client:only={"svelte"} />
+  <CoursePage courseId={slug} client:only={"svelte"} />
+</Layout>
