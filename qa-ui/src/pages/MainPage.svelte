@@ -29,7 +29,7 @@
       <div
         class="bg-neutral-10 dark:bg-neutral-900 p-6 md:p-8 border border-gray-200 dark:border-gray-700 rounded-2xl"
       >
-        <div class="flex flex-wrap flex-row gap-6 mb-12">
+        <div class="flex flex-wrap flex-row gap-6 my-2">
           <!-- Search-->
           <div class="pt-2 relative mx-auto text-gray-600">
             <input
@@ -47,8 +47,8 @@
           </div>
 
           <!-- Courses -->
-          <section class="p-5">
-            <div class="mb-5 flex items-center justify-between">
+          <section class="p-6">
+            <div class="mb-4 flex items-center justify-between">
               <h4 class="font-medium text-slate-500">Courses</h4>
               <div
                 class="rounded-md bg-pink-400/70 px-2 font-semibold text-gray-900"
@@ -60,15 +60,15 @@
             <!-- List courses-->
             <div>
               {#each $courses as course}
-                <div class="space-y-2">
+                <div class="space-y-2 py-2">
                   <a
                     href="/courses/{course.id}"
-                    class="flex space-x-4 rounded-xl bg-white p-3 shadow-sm hover:bg-primary-100"
+                    class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm hover:bg-primary-100"
                   >
                     <div>
-                      <h4 class="font-semibold text-gray-600">
+                      <h1 class="font-semibold  text-gray-600">
                         {course.title}
-                      </h4>
+                      </h1>
                       <p class="text-sm text-slate-400">
                         {course.course_description}
                       </p>
@@ -77,6 +77,7 @@
                 </div>
               {/each}
             </div>
+            <!-- List courses End-->
           </section>
         </div>
       </div>

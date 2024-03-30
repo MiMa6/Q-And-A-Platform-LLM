@@ -1,3 +1,5 @@
 import { writable } from "svelte/store";
 const courses = writable([]);
-export { courses };
+const course = writable([]);
+
+export { courses, course };

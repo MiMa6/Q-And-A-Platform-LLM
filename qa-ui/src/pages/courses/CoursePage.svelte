@@ -1,9 +1,30 @@
 <script>
   import { onMount } from "svelte";
-  import { courses } from "../../stores/courseStore.js";
+  import { userUuid } from "../../stores/stores.js";
   import { questions } from "../../stores/questionStore.js";
 
   export let courseId;
+
+  let course = [];
+
+  const getCourse = async () => {
+    const data = {
+      courseID: courseId,
+    };
+
+    const response = await fetch("/api/course", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await response.json();
+    course = jsonData.data[0];
+    console.log("$course");
+    console.log(course);
+  };
 
   const getQuestions = async () => {
     const data = {
@@ -23,6 +44,25 @@
     console.log($questions);
   };
 
+  const postQuestionvote = async (voteType, questionID) => {
+    const data = {
+      questionID: questionID,
+      userUuid: $userUuid,
+      voteType: voteType,
+    };
+
+    const response = await fetch("/api/vote/question", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await response.json();
+    console.log(jsonData);
+  };
+  onMount(getCourse);
   onMount(getQuestions);
 </script>
 
@@ -38,6 +78,16 @@
         class="bg-neutral-10 dark:bg-neutral-900 p-6 md:p-8 border border-gray-200 dark:border-gray-700 rounded-2xl"
       >
         <div class="flex flex-wrap flex-row gap-6 mb-12">
+          <!-- Course -->
+          <div>
+            <h1 class="text-lg font-semibold text-center text-gray-600 pb-2">
+              {course.title}
+            </h1>
+            <p class="text-sm text-slate-400">
+              {course.course_description}
+            </p>
+          </div>
+
           <!-- Questions -->
           <section class="p-5">
             <div class="mb-5 flex items-center justify-between">
@@ -49,23 +99,42 @@
               </div>
             </div>
 
-            <!-- List courses-->
+            <!-- List questions-->
             <div>
               {#each $questions as question}
-                <div class="space-y-2">
-                  <a
-                    href="/"
-                    class="flex space-x-4 rounded-xl bg-white p-3 shadow-sm hover:bg-primary-100"
-                  >
-                    <div>
-                      <p class="font-semibold text-gray-600">
-                        {question.question_text}
-                      </p>
-                    </div>
-                  </a>
+                <div class="space-y-2 py-2">
+                  <div class="flex">
+                    <button
+                      class="material-symbols-outlined relative !inline-flex !items-center justify-center px-2 rounded-xl hover:bg-primary-100"
+                      on:click={() => postQuestionvote("upvote", question.id)}
+                    >
+                      <span class="material-symbols-outlined">
+                        arrow_drop_up
+                      </span>
+                    </button>
+                    <button
+                      class="material-symbols-outlined relative !inline-flex !items-center justify-center px-2 mx-4 rounded-xl hover:bg-primary-100"
+                      on:click={() => postQuestionvote("downvote", question.id)}
+                    >
+                      <span class="material-symbols-outlined">
+                        arrow_drop_down
+                      </span>
+                    </button>
+                    <a
+                      href="/"
+                      class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm hover:bg-primary-100"
+                    >
+                      <div>
+                        <p class="font-semibold text-gray-600">
+                          {question.question_text}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
                 </div>
               {/each}
             </div>
+            <!-- List questions-->
           </section>
         </div>
       </div>

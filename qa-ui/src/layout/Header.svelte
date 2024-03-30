@@ -10,7 +10,7 @@
       <!-- title -->
       <h2 class="text-3xl">Q&A Platform</h2>
       <!-- sub title -->
-      <h2 class="text-xl">Modern Web Development| Front-end | Back-end</h2>
+      <h2 class="text-xl">Modern Web Development | Front-end | Back-end</h2>
       <p class="text-base mt-2">userUuid: {$userUuid}</p>
     </div>
   </header>

@@ -21,6 +21,23 @@ CREATE TABLE answers (
 	post_time TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TYPE VOTE_TYPE AS ENUM ('upvote', 'downvote');
+
+CREATE TABLE course_votes (
+	id SERIAL PRIMARY KEY,
+	course_id INTEGER REFERENCES courses(id),
+	user_uuid TEXT NOT NULL,
+	vote VOTE_TYPE NOT NULL DEFAULT 'downvote',
+	vote_time TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE question_votes (
+	id SERIAL PRIMARY KEY,
+	question_id INTEGER REFERENCES courses(id),
+	user_uuid TEXT NOT NULL,
+	vote VOTE_TYPE NOT NULL DEFAULT 'downvote',
+	vote_time TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
 CREATE INDEX que_user_uuid_cour_id_idx ON 
   questions (user_uuid, course_id);

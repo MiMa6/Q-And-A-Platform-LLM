@@ -10,13 +10,12 @@ const handleGetRoot = async (request) => {
 
 const handlePostSpecificCourse = async (request) => {
   const requestData = await request.json();
-  const courseID = requestData.id;
+  const courseID = requestData.courseID;
+  console.log("courseID", courseID);
 
-  const course = await coursesService.find(courseID);
+  const courseResponse = await coursesService.find(courseID);
 
-  return new Response(JSON.stringify(course), {
-    headers: { "content-type": "application/json" },
-  });
+  return courseResponse;
 };
 
 const handleGetCourses = async (request) => {
@@ -36,7 +35,7 @@ const handleGetCourseIds = async (request) => {
 
   const courseIds = await coursesService.findAllIds();
   console.log(courseIds);
-  
+
   return new Response(JSON.stringify(courseIds), {
     headers: { "content-type": "application/json" },
   });
@@ -68,6 +67,15 @@ const handlePostGenerateAnswer = async (request) => {
   return response;
 };
 
+const handlePostVoteQuestion = async (request) => {
+  const data = await request.json();
+  console.log("apis ny ");
+  const response = await questionService.vote(data);
+
+  return new Response(JSON.stringify(response), {
+    headers: { "content-type": "application/json" },
+  });
+};
 const urlMapping = [
   {
     method: "GET",
@@ -98,6 +106,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/generate" }),
     fn: handlePostGenerateAnswer,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/vote/question" }),
+    fn: handlePostVoteQuestion,
   },
 ];
 
