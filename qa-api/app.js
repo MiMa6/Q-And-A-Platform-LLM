@@ -1,4 +1,5 @@
-import * as coursesService from "./services/coursesService.js";
+import * as answerService from "./services/answerService.js";
+import * as courseService from "./services/courseService.js";
 import * as questionService from "./services/questionService.js";
 
 import { serve } from "./deps.js";
@@ -13,13 +14,13 @@ const handlePostSpecificCourse = async (request) => {
   const courseID = requestData.courseID;
   console.log("courseID", courseID);
 
-  const courseResponse = await coursesService.find(courseID);
+  const courseResponse = await courseService.find(courseID);
 
   return courseResponse;
 };
 
 const handleGetCourses = async (request) => {
-  const courses = await coursesService.findAll();
+  const courses = await courseService.findAll();
 
   return new Response(JSON.stringify(courses), {
     headers: { "content-type": "application/json" },
@@ -33,7 +34,7 @@ const handleGetCourseIds = async (request) => {
   //headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Adjust as needed
   //headers.set("content-type", "application/json"); // Adjust as needed
 
-  const courseIds = await coursesService.findAllIds();
+  const courseIds = await courseService.findAllIds();
   console.log(courseIds);
 
   return new Response(JSON.stringify(courseIds), {
@@ -41,14 +42,35 @@ const handleGetCourseIds = async (request) => {
   });
 };
 
+const handlePostSpecificQuestion = async (request) => {
+  const requestData = await request.json();
+  const questionID = requestData.questionID;
+  console.log("questionID", questionID);
+
+  const questionResponse = await questionService.findQuesitonID(questionID);
+
+  return questionResponse;
+};
 const handlePostQuestions = async (request) => {
   const requestData = await request.json();
   const courseID = requestData.courseID;
   console.log(courseID);
 
-  const questions = await questionService.find(courseID);
+  const questions = await questionService.findCourseID(courseID);
 
   return new Response(JSON.stringify(questions), {
+    headers: { "content-type": "application/json" },
+  });
+};
+
+const handlePostAnswers = async (request) => {
+  const requestData = await request.json();
+  const questionID = requestData.questionID;
+  console.log(questionID);
+
+  const answers = await answerService.findAll(questionID);
+
+  return new Response(JSON.stringify(answers), {
     headers: { "content-type": "application/json" },
   });
 };
@@ -99,8 +121,18 @@ const urlMapping = [
   },
   {
     method: "POST",
+    pattern: new URLPattern({ pathname: "/question" }),
+    fn: handlePostSpecificQuestion,
+  },
+  {
+    method: "POST",
     pattern: new URLPattern({ pathname: "/questions" }),
     fn: handlePostQuestions,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/answers" }),
+    fn: handlePostAnswers,
   },
   {
     method: "POST",

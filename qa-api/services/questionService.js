@@ -1,11 +1,38 @@
 import { sql } from "../database/database.js";
 
-const find = async (id) => {
+const findCourseID = async (id) => {
   return await sql`
     SELECT * 
     FROM questions
     WHERE course_id = ${id};
+
   `;
+};
+
+const findQuesitonID = async (id) => {
+  const result = await sql`
+    SELECT * 
+    FROM questions
+    WHERE id = ${id};
+  `;
+
+  if (result.length > 0) {
+    console.log("question data")
+    console.log(result)
+    return new Response(
+      JSON.stringify({
+        status: 200,
+        data: result,
+      })
+    );
+  } else {
+    return new Response(
+      JSON.stringify({
+        status: 400,
+        data: `No question with ${id} found`,
+      })
+    );
+  }
 };
 
 const vote = async (data) => {
@@ -19,4 +46,4 @@ const vote = async (data) => {
     RETURNING *;
   `;
 };
-export { find, vote };
+export { findCourseID, findQuesitonID, vote };

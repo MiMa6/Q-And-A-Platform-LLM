@@ -44,6 +44,20 @@
     console.log($questions);
   };
 
+  const getQuestionVotes = async () => {
+    const response = await fetch("/api/questions/votes", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await response.json();
+    questionVotes.set(jsonData);
+    console.log($questions);
+  };
+
   const postQuestionvote = async (voteType, questionID) => {
     const data = {
       questionID: questionID,
@@ -105,15 +119,20 @@
                 <div class="space-y-2 py-2">
                   <div class="flex">
                     <button
-                      class="material-symbols-outlined relative !inline-flex !items-center justify-center px-2 rounded-xl hover:bg-primary-100"
+                      class="relative !inline-flex !items-center justify-center px-2 mx-2 rounded-xl hover:bg-primary-100"
                       on:click={() => postQuestionvote("upvote", question.id)}
                     >
                       <span class="material-symbols-outlined">
                         arrow_drop_up
                       </span>
                     </button>
+                    <div
+                      class=" relative !inline-flex !items-center rounded-xl bg-pink-400/70 mt-4 px-2 mx-2 font-semibold text-gray-900"
+                    >
+                      {$questions.length}
+                    </div>
                     <button
-                      class="material-symbols-outlined relative !inline-flex !items-center justify-center px-2 mx-4 rounded-xl hover:bg-primary-100"
+                      class="material-symbols-outlined relative !inline-flex !items-center justify-center px-2 mx-2 rounded-xl hover:bg-primary-100"
                       on:click={() => postQuestionvote("downvote", question.id)}
                     >
                       <span class="material-symbols-outlined">
@@ -121,7 +140,7 @@
                       </span>
                     </button>
                     <a
-                      href="/"
+                      href="/questions/{question.id}"
                       class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm hover:bg-primary-100"
                     >
                       <div>
