@@ -69,7 +69,7 @@
                       <h1 class="font-semibold  text-gray-600">
                         {course.title}
                       </h1>
-                      <p class="text-sm text-slate-400">
+                      <p class="text-sm text-slate-400 ">
                         {course.course_description}
                       </p>
                     </div>

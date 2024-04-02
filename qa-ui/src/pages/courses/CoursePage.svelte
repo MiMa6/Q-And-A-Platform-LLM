@@ -4,8 +4,15 @@
   import { questions } from "../../stores/questionStore.js";
 
   export let courseId;
+  let newQuestionTitle = "";
+  let newQuestionDescription = "";
 
   let course = [];
+
+  const handleNewQuestion = (event) => {
+    console.log(newQuestionTitle);
+    console.log(newQuestionDescription);
+  };
 
   const getCourse = async () => {
     const data = {
@@ -84,79 +91,133 @@
   class="font-sans text-base font-normal text-gray-700 dark:text-gray-200 bg-surface-400 dark:bg-surfacedark-200"
 >
   <!-- content -->
-  <div class="flex flex-col w-full gap-8 overflow-hidden">
+  <div class="flex flex-col w-full gap-8 overflow-hidden ">
     <div
-      class="flex flex-wrap w-full flex-col gap-8 md:p-10 bg-surface-400 dark:bg-surfacedark-100 rounded-2xl"
+      class="flex flex-wrap w-full flex-col gap-8 md:p-10 dark:bg-surfacedark-100"
     >
       <div
-        class="bg-neutral-10 dark:bg-neutral-900 p-6 md:p-8 border border-gray-200 dark:border-gray-700 rounded-2xl"
+        class="bg-neutral-10 dark:bg-neutral-900 p-6 md:p-8 border border-gray-200 dark:border-gray-700"
       >
-        <div class="flex flex-wrap flex-row gap-6 mb-12">
+        <div
+          class="flex flex-wrap flex-row gap-6 mb-12 !items-center !justify-center rounded-xl"
+        >
           <!-- Course -->
-          <div>
-            <h1 class="text-lg font-semibold text-center text-gray-600 pb-2">
+          <div class="rounded-xl">
+            <h1 class="text-lg text-center text-gray-600 px-8 py-2 ">
               {course.title}
             </h1>
-            <p class="text-sm text-slate-400">
+            <p class="text-sm text-slate-400 max-w-3xl px-6 py-4">
               {course.course_description}
             </p>
           </div>
+          <!-- Course end -->
 
-          <!-- Questions -->
-          <section class="p-5">
-            <div class="mb-5 flex items-center justify-between">
-              <h4 class="font-medium text-slate-500">Questions</h4>
+          <!-- Create Question -->
+
+          <div class="flex w-full max-w-3xl px-6">
+            <button
+              class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 hover:bg-primary-200"
+              on:click={console.log("test")}
+            >
+              <div class="flex flex-col w-full">
+                <p class="text-sm text-gray-600">Create new question</p>
+                <span class="material-symbols-outlined"> add </span>
+              </div>
+            </button>
+            <div class="flex flex-col w-full">
               <div
-                class="rounded-md bg-pink-400/70 px-2 font-semibold text-gray-900"
+                class="rounded-xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-100"
               >
-                {$questions.length}
+                <input
+                  type="text"
+                  bind:value={newQuestionTitle}
+                  on:input={handleNewQuestion}
+                  name="question_title"
+                  id="questionTitleInput"
+                  autocomplete="question_title"
+                  placeholder="   Write title..."
+                  class="text-sm text-center  block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
+                />
+              </div>
+
+              <div class="flex flex-col w-full">
+                <div
+                  class="flex rounded-xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-100"
+                >
+                  <input
+                    type="text"
+                    bind:value={newQuestionDescription}
+                    on:input={handleNewQuestion}
+                    name="description"
+                    id="questionDescriptionInput"
+                    autocomplete="description"
+                    placeholder="   Write description..."
+                    class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
+                  />
+                </div>
               </div>
             </div>
+          </div>
 
-            <!-- List questions-->
-            <div>
-              {#each $questions as question}
-                <div class="space-y-2 py-2">
-                  <div class="flex">
-                    <button
-                      class="relative !inline-flex !items-center justify-center px-2 mx-2 rounded-xl hover:bg-primary-100"
-                      on:click={() => postQuestionvote("upvote", question.id)}
-                    >
-                      <span class="material-symbols-outlined">
-                        arrow_drop_up
-                      </span>
-                    </button>
-                    <div
-                      class=" relative !inline-flex !items-center rounded-xl bg-pink-400/70 mt-4 px-2 mx-2 font-semibold text-gray-900"
-                    >
-                      {$questions.length}
-                    </div>
-                    <button
-                      class="material-symbols-outlined relative !inline-flex !items-center justify-center px-2 mx-2 rounded-xl hover:bg-primary-100"
-                      on:click={() => postQuestionvote("downvote", question.id)}
-                    >
-                      <span class="material-symbols-outlined">
-                        arrow_drop_down
-                      </span>
-                    </button>
-                    <a
-                      href="/questions/{question.id}"
-                      class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm hover:bg-primary-100"
-                    >
-                      <div>
-                        <p class="font-semibold text-gray-600">
-                          {question.question_text}
-                        </p>
+          <!-- Create Question End-->
+
+          <div class="flex flex-col w-full max-w-3xl">
+            <!-- Questions -->
+            <section class="p-5">
+              <div class="mb-5 flex items-center justify-center">
+                <h1 class="text-lg text-center text-gray-600 pb-2">
+                  Questions
+                </h1>
+              </div>
+
+              <!-- List questions-->
+              <div>
+                {#each $questions as question}
+                  <div class="space-y-2 py-2">
+                    <div class="flex !items-center">
+                      <div
+                        class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
+                      >
+                      <p class="text-kg text-gray-600">{$questions.length}</p>
+                        
                       </div>
-                    </a>
+
+                      <button
+                        class="!inline-flex !items-center rounded-xl px-4 pt-2 mr-4 bg-primary-100  bg-primary-100 hover:bg-primary-200"
+                        on:click={() => postQuestionvote("upvote", question.id)}
+                      >
+                        <div class="flex flex-col w-full">
+                          <p class="text-sm text-gray-600">Vote up</p>
+                          <span class="material-symbols-outlined">
+                            arrow_drop_up
+                          </span>
+                        </div>
+                      </button>
+                      <a
+                        href="/questions/{question.id}"
+                        class="flex space-x-4 rounded-xl p-4 hover:bg-primary-200"
+                      >
+                        <div>
+                          <p class="font-semibold text-gray-600">
+                            {question.question_text}
+                          </p>
+                        </div>
+                      </a>
+                    </div>
                   </div>
-                </div>
-              {/each}
-            </div>
-            <!-- List questions-->
-          </section>
+                {/each}
+              </div>
+              <!-- List questions-->
+            </section>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </main>
+
+<style>
+  .container {
+    width: fit-content;
+  }
+</style>
