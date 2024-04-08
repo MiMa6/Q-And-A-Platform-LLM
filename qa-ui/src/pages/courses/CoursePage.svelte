@@ -4,22 +4,16 @@
   import { questions } from "../../stores/questionStore.js";
 
   export let courseId;
-  let newQuestionTitle = "";
-  let newQuestionDescription = "";
+  let newQuestionText = "";
 
   let course = [];
-
-  const handleNewQuestion = (event) => {
-    console.log(newQuestionTitle);
-    console.log(newQuestionDescription);
-  };
 
   const getCourse = async () => {
     const data = {
       courseID: courseId,
     };
 
-    const response = await fetch("/api/course", {
+    const response = await fetch("/api/qa/course", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +32,7 @@
       courseID: courseId,
     };
 
-    const response = await fetch("/api/questions", {
+    const response = await fetch("/api/qa/questions", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +46,7 @@
   };
 
   const getQuestionVotes = async () => {
-    const response = await fetch("/api/questions/votes", {
+    const response = await fetch("/api/qa/questions/votes", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +66,7 @@
       voteType: voteType,
     };
 
-    const response = await fetch("/api/vote/question", {
+    const response = await fetch("/api/qa/vote/question", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -83,6 +77,25 @@
     const jsonData = await response.json();
     console.log(jsonData);
   };
+
+  const postLlmQuestion = async () => {
+    const data = {
+      question: newQuestionText,
+    };
+
+    console.log(JSON.stringify(data));
+    const response = await fetch("/api/llm", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await response.json();
+    console.log(jsonData[0].generated_text);
+  };
+
   onMount(getCourse);
   onMount(getQuestions);
 </script>
@@ -91,7 +104,7 @@
   class="font-sans text-base font-normal text-gray-700 dark:text-gray-200 bg-surface-400 dark:bg-surfacedark-200"
 >
   <!-- content -->
-  <div class="flex flex-col w-full gap-8 overflow-hidden ">
+  <div class="flex flex-col w-full gap-8 overflow-hidden">
     <div
       class="flex flex-wrap w-full flex-col gap-8 md:p-10 dark:bg-surfacedark-100"
     >
@@ -103,7 +116,7 @@
         >
           <!-- Course -->
           <div class="rounded-xl">
-            <h1 class="text-lg text-center text-gray-600 px-8 py-2 ">
+            <h1 class="text-lg text-center text-gray-600 px-8 py-2">
               {course.title}
             </h1>
             <p class="text-sm text-slate-400 max-w-3xl px-6 py-4">
@@ -117,7 +130,7 @@
           <div class="flex w-full max-w-3xl px-6">
             <button
               class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 hover:bg-primary-200"
-              on:click={console.log("test")}
+              on:click={() => postLlmQuestion()}
             >
               <div class="flex flex-col w-full">
                 <p class="text-sm text-gray-600">Create new question</p>
@@ -130,31 +143,13 @@
               >
                 <input
                   type="text"
-                  bind:value={newQuestionTitle}
-                  on:input={handleNewQuestion}
-                  name="question_title"
-                  id="questionTitleInput"
-                  autocomplete="question_title"
-                  placeholder="   Write title..."
-                  class="text-sm text-center  block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
+                  bind:value={newQuestionText}
+                  name="question_text"
+                  id="questionTextInput"
+                  autocomplete="question_text"
+                  placeholder="   Write question..."
+                  class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
                 />
-              </div>
-
-              <div class="flex flex-col w-full">
-                <div
-                  class="flex rounded-xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-100"
-                >
-                  <input
-                    type="text"
-                    bind:value={newQuestionDescription}
-                    on:input={handleNewQuestion}
-                    name="description"
-                    id="questionDescriptionInput"
-                    autocomplete="description"
-                    placeholder="   Write description..."
-                    class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -178,12 +173,11 @@
                       <div
                         class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
                       >
-                      <p class="text-kg text-gray-600">{$questions.length}</p>
-                        
+                        <p class="text-kg text-gray-600">{$questions.length}</p>
                       </div>
 
                       <button
-                        class="!inline-flex !items-center rounded-xl px-4 pt-2 mr-4 bg-primary-100  bg-primary-100 hover:bg-primary-200"
+                        class="!inline-flex !items-center rounded-xl px-4 pt-2 mr-4 bg-primary-100 bg-primary-100 hover:bg-primary-200"
                         on:click={() => postQuestionvote("upvote", question.id)}
                       >
                         <div class="flex flex-col w-full">

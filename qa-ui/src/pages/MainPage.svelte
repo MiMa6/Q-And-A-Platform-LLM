@@ -3,7 +3,7 @@
   import { courses } from "../stores/courseStore.js";
 
   const getCourses = async () => {
-    const response = await fetch("/api/courses", {
+    const response = await fetch("/api/qa/courses", {
       method: "Get",
       headers: {
         "Content-Type": "application/json",
@@ -66,10 +66,10 @@
                     class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm hover:bg-primary-100"
                   >
                     <div>
-                      <h1 class="font-semibold  text-gray-600">
+                      <h1 class="font-semibold text-gray-600">
                         {course.title}
                       </h1>
-                      <p class="text-sm text-slate-400 ">
+                      <p class="text-sm text-slate-400">
                         {course.course_description}
                       </p>
                     </div>

@@ -12,7 +12,7 @@
       questionID: questionID,
     };
     console.log("Question page data questionID: " + data.questionID);
-    const response = await fetch("/api/question", {
+    const response = await fetch("/api/qa/question", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +31,7 @@
       questionID: questionID,
     };
 
-    const response = await fetch("/api/answers", {
+    const response = await fetch("/api/qa/answers", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -80,7 +80,7 @@
                 <div class="space-y-2 py-2">
                   <div class="flex">
                     <div
-                      class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm "
+                      class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm"
                     >
                       <div>
                         <p class="font-semibold text-gray-600">
@@ -93,7 +93,6 @@
               {/each}
             </div>
             <!-- List Answers End-->
-
 
             <div class="mb-5 flex items-center justify-between">
               <h4 class="font-medium text-slate-500 mt-8">User Answers</h4>
