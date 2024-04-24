@@ -7,7 +7,7 @@
 
   let question = [];
 
-  const getQuestion = async () => {
+  const getQuestionById = async () => {
     const data = {
       questionID: questionID,
     };
@@ -44,7 +44,7 @@
     console.log($answers);
   };
 
-  onMount(getQuestion);
+  onMount(getQuestionById);
   onMount(getAnswers);
 </script>
 

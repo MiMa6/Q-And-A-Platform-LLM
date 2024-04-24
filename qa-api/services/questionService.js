@@ -1,13 +1,31 @@
 import { sql } from "../database/database.js";
 
-const findCourseID = async (id) => {
+const findQuestionsPerCourseID = async (id) => {
   return await sql`
     SELECT * 
     FROM questions
-    WHERE course_id = ${id};
-
+    WHERE course_id = ${id}
+    ORDER BY post_time DESC;
   `;
 };
+
+const findQuestionVotesPerCourseID = async (id) => {
+  return await sql`
+    SELECT * 
+    FROM question_votes
+    WHERE course_id = ${id}
+  `;
+};
+
+const findAllQuestionVotes = async () => {
+  return await sql`
+    SELECT * 
+    FROM question_votes
+    WHERE question_id = ${id}
+    ORDER BY vote_time DESC;
+  `;
+};
+
 
 const findQuesitonID = async (id) => {
   const result = await sql`
@@ -37,13 +55,36 @@ const findQuesitonID = async (id) => {
 
 const vote = async (data) => {
   const questionID = data.questionID;
+  const courseID = data.courseID;
   const userUuid = data.userUuid;
   const voteType = data.voteType;
 
   return await sql`
-    INSERT INTO question_votes (question_id, user_uuid, vote)
-    VALUES (${questionID}, ${userUuid}, ${voteType})
+    INSERT INTO question_votes (question_id, course_id, user_uuid, vote)
+    VALUES (${questionID}, ${courseID}, ${userUuid}, ${voteType})
     RETURNING *;
   `;
 };
-export { findCourseID, findQuesitonID, vote };
+
+const addNewQuesiton = async (data) => {
+  const courseID = data.courseID;
+  const userUuid = data.userUuid;
+  const question_text = data.question_text;
+
+  try {
+
+  await sql`
+    INSERT INTO questions (course_id, user_uuid, question_text)
+    VALUES (${courseID}, ${userUuid}, ${question_text})
+  `;
+  console.log("New question added successfully:");
+  return new Response("OK", { status: 200 });
+} catch (error) {
+  console.error("Error adding new question:", error.message);
+  return new Response("err", { status: 400 });
+}
+};
+
+
+
+export { findQuestionsPerCourseID, findQuestionVotesPerCourseID, findQuesitonID, vote, addNewQuesiton };

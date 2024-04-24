@@ -33,7 +33,8 @@ CREATE TABLE course_votes (
 
 CREATE TABLE question_votes (
 	id SERIAL PRIMARY KEY,
-	question_id INTEGER REFERENCES courses(id),
+	course_id INTEGER REFERENCES courses(id),
+	question_id INTEGER REFERENCES questions(id),
 	user_uuid TEXT NOT NULL,
 	vote VOTE_TYPE NOT NULL DEFAULT 'downvote',
 	vote_time TIMESTAMP WITH TIME ZONE DEFAULT NOW()

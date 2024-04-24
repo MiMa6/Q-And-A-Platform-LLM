@@ -51,17 +51,47 @@ const handlePostSpecificQuestion = async (request) => {
 
   return questionResponse;
 };
+const handlePostNewQuestion = async (request) => {
+  const requestData = await request.json();
+
+  const questionData = {
+    courseID: requestData.courseID,
+    userUuid: requestData.userUuid,
+    question_text: requestData.question_text,
+  };
+
+
+  console.log(questionData);
+
+  const questionResponse = await questionService.addNewQuesiton(questionData);
+
+  return questionResponse;
+};
+
 const handlePostQuestions = async (request) => {
   const requestData = await request.json();
   const courseID = requestData.courseID;
   console.log(courseID);
 
-  const questions = await questionService.findCourseID(courseID);
+  const questions = await questionService.findQuestionsPerCourseID(courseID);
 
   return new Response(JSON.stringify(questions), {
     headers: { "content-type": "application/json" },
   });
 };
+
+const handlePostQuestionsVotes = async (request) => {
+  const requestData = await request.json();
+  const courseID = requestData.courseID;
+  console.log(courseID);
+
+  const questionVotes = await questionService.findQuestionVotesPerCourseID(courseID);
+
+  return new Response(JSON.stringify(questionVotes), {
+    headers: { "content-type": "application/json" },
+  });
+};
+
 
 const handlePostAnswers = async (request) => {
   const requestData = await request.json();
@@ -126,8 +156,18 @@ const urlMapping = [
   },
   {
     method: "POST",
+    pattern: new URLPattern({ pathname: "/question/new" }),
+    fn: handlePostNewQuestion,
+  },
+  {
+    method: "POST",
     pattern: new URLPattern({ pathname: "/questions" }),
     fn: handlePostQuestions,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/questions/votes" }),
+    fn: handlePostQuestionsVotes,
   },
   {
     method: "POST",

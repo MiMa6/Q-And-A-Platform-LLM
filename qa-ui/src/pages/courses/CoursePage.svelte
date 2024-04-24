@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { userUuid } from "../../stores/stores.js";
   import { questions } from "../../stores/questionStore.js";
+  import { questionVotes } from "../../stores/questionVotesStore.js";
 
   export let courseId;
   let newQuestionText = "";
@@ -23,11 +24,10 @@
 
     const jsonData = await response.json();
     course = jsonData.data[0];
-    console.log("$course");
     console.log(course);
   };
 
-  const getQuestions = async () => {
+  const getAllQuestions = async () => {
     const data = {
       courseID: courseId,
     };
@@ -45,7 +45,31 @@
     console.log($questions);
   };
 
-  const getQuestionVotes = async () => {
+  const postNewQuestion = async () => {
+    const data = {
+      courseID: courseId,
+      userUuid: $userUuid,
+      question_text: newQuestionText,
+    };
+
+    const response = await fetch("/api/qa/question/new", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await response;
+    console.log(jsonData);
+    getAllQuestions();
+  };
+
+  const getAllQuestionVotes = async () => {
+    const data = {
+      courseID: courseId,
+    };
+
     const response = await fetch("/api/qa/questions/votes", {
       method: "Post",
       headers: {
@@ -56,12 +80,18 @@
 
     const jsonData = await response.json();
     questionVotes.set(jsonData);
-    console.log($questions);
+    
+    console.log($questionVotes);
+
+    const filteredData = 
+    console.log("filtered votes")
+    console.log(filteredData);
   };
 
   const postQuestionvote = async (voteType, questionID) => {
     const data = {
       questionID: questionID,
+      courseID: courseId,
       userUuid: $userUuid,
       voteType: voteType,
     };
@@ -76,6 +106,8 @@
 
     const jsonData = await response.json();
     console.log(jsonData);
+    getAllQuestionVotes();
+    
   };
 
   const postLlmQuestion = async () => {
@@ -95,9 +127,12 @@
     const jsonData = await response.json();
     console.log(jsonData[0].generated_text);
   };
-
+  
   onMount(getCourse);
-  onMount(getQuestions);
+  onMount(getAllQuestions);
+  onMount(getAllQuestionVotes);
+
+
 </script>
 
 <main
@@ -130,7 +165,7 @@
           <div class="flex w-full max-w-3xl px-6">
             <button
               class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 hover:bg-primary-200"
-              on:click={() => postLlmQuestion()}
+              on:click={() => postNewQuestion()}
             >
               <div class="flex flex-col w-full">
                 <p class="text-sm text-gray-600">Create new question</p>
@@ -173,7 +208,7 @@
                       <div
                         class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
                       >
-                        <p class="text-kg text-gray-600">{$questions.length}</p>
+                        <p class="text-kg text-gray-600">{$questionVotes.filter(obj => obj.course_id === 1 && obj.question_id === question.id).length}</p>
                       </div>
 
                       <button
