@@ -82,10 +82,6 @@
     questionVotes.set(jsonData);
     
     console.log($questionVotes);
-
-    const filteredData = 
-    console.log("filtered votes")
-    console.log(filteredData);
   };
 
   const postQuestionvote = async (voteType, questionID) => {
@@ -208,7 +204,7 @@
                       <div
                         class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
                       >
-                        <p class="text-kg text-gray-600">{$questionVotes.filter(obj => obj.course_id === 1 && obj.question_id === question.id).length}</p>
+                        <p class="text-kg text-gray-600">{$questionVotes.filter(obj => obj.course_id === parseInt(courseId) && obj.question_id === question.id).length}</p>
                       </div>
 
                       <button
@@ -216,7 +212,7 @@
                         on:click={() => postQuestionvote("upvote", question.id)}
                       >
                         <div class="flex flex-col w-full">
-                          <p class="text-sm text-gray-600">Vote up</p>
+                          <p class="text-sm text-gray-600">Vote</p>
                           <span class="material-symbols-outlined">
                             arrow_drop_up
                           </span>
