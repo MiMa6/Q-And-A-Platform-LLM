@@ -23,9 +23,9 @@ CREATE TABLE answers (
 
 CREATE TYPE VOTE_TYPE AS ENUM ('upvote', 'downvote');
 
-CREATE TABLE course_votes (
+CREATE TABLE answer_votes (
 	id SERIAL PRIMARY KEY,
-	course_id INTEGER REFERENCES courses(id),
+	answer_id INTEGER REFERENCES answers(id),
 	user_uuid TEXT NOT NULL,
 	vote VOTE_TYPE NOT NULL DEFAULT 'downvote',
 	vote_time TIMESTAMP WITH TIME ZONE DEFAULT NOW()
