@@ -52,7 +52,7 @@
       question_text: newQuestionText,
     };
 
-    const response = await fetch("/api/qa/question/new", {
+    const responseNewQuesiton = await fetch("/api/qa/question/new", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -60,9 +60,55 @@
       body: JSON.stringify(data),
     });
 
-    const jsonData = await response;
+    const jsonData = await responseNewQuesiton;
+    console.log(jsonData);
+
+    createLlmAnswer(data);
+    getAllQuestions();
+  };
+
+  const delQuestion = async (questionID) => {
+    const data = {
+      questionID: questionID,
+    };
+
+    const responseQuestion = await fetch("/api/qa/question/del", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await responseQuestion;
     console.log(jsonData);
     getAllQuestions();
+  };
+
+  const createLlmAnswer = async (data) => {
+    const dataLlm = {
+      question: newQuestionText,
+    };
+
+    console.log(JSON.stringify(dataLlm));
+    const response = await fetch("/api/llm", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dataLlm),
+    });
+
+    const jsonData = await response.json();
+    const llmAnswer = jsonData[0].generated_text;
+    console.log(llmAnswer);
+    //const responseLlmAnswer = await fetch("/api/qa/question/llm", {
+    //  method: "Post",
+    //  headers: {
+    //    "Content-Type": "application/json",
+    //  },
+    //  body: JSON.stringify({...data, llmAnswer: llmAnswer}),
+    //});
   };
 
   const getAllQuestionVotes = async () => {
@@ -80,7 +126,7 @@
 
     const jsonData = await response.json();
     questionVotes.set(jsonData);
-    
+
     console.log($questionVotes);
   };
 
@@ -103,32 +149,11 @@
     const jsonData = await response.json();
     console.log(jsonData);
     getAllQuestionVotes();
-    
   };
 
-  const postLlmQuestion = async () => {
-    const data = {
-      question: newQuestionText,
-    };
-
-    console.log(JSON.stringify(data));
-    const response = await fetch("/api/llm", {
-      method: "Post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    const jsonData = await response.json();
-    console.log(jsonData[0].generated_text);
-  };
-  
   onMount(getCourse);
   onMount(getAllQuestions);
   onMount(getAllQuestionVotes);
-
-
 </script>
 
 <main
@@ -204,11 +229,17 @@
                       <div
                         class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
                       >
-                        <p class="text-kg text-gray-600">{$questionVotes.filter(obj => obj.course_id === parseInt(courseId) && obj.question_id === question.id).length}</p>
+                        <p class="text-kg text-gray-600">
+                          {$questionVotes.filter(
+                            (obj) =>
+                              obj.course_id === parseInt(courseId) &&
+                              obj.question_id === question.id
+                          ).length}
+                        </p>
                       </div>
 
                       <button
-                        class="!inline-flex !items-center rounded-xl px-4 pt-2 mr-4 bg-primary-100 bg-primary-100 hover:bg-primary-200"
+                        class="!inline-flex !items-center rounded-xl px-4 pt-2 mr-4 bg-primary-100 0 hover:bg-primary-200"
                         on:click={() => postQuestionvote("upvote", question.id)}
                       >
                         <div class="flex flex-col w-full">
@@ -228,6 +259,19 @@
                           </p>
                         </div>
                       </a>
+                      {#if question.user_uuid === $userUuid}
+                      <button
+                      class="!inline-flex !items-center rounded-xl px-4 pt-2 ml-4 bg-error-300 hover:bg-error-400"
+                      on:click={() => delQuestion(question.id)}
+                    >
+                      <div class="flex flex-col w-full">
+                        <p class="text-sm text-gray-600">Delete</p>
+                        <span class="material-symbols-outlined">
+                          delete
+                        </span>
+                      </div>
+                    </button>
+                    {/if}
                     </div>
                   </div>
                 {/each}

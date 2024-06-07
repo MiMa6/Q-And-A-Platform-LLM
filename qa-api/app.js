@@ -51,6 +51,7 @@ const handlePostSpecificQuestion = async (request) => {
 
   return questionResponse;
 };
+
 const handlePostNewQuestion = async (request) => {
   const requestData = await request.json();
 
@@ -60,12 +61,43 @@ const handlePostNewQuestion = async (request) => {
     question_text: requestData.question_text,
   };
 
-
   console.log(questionData);
 
   const questionResponse = await questionService.addNewQuesiton(questionData);
-
   return questionResponse;
+};
+
+const handlePostDeleteQuestion = async (request) => {
+  const requestData = await request.json();
+
+  const questionData = {
+    questionID: requestData.questionID
+  };
+
+  console.log(questionData);
+
+  const questionResponse = await questionService.delQuesiton(questionData);
+  return questionResponse;
+};
+
+const handlePostQuestionLlmAnswer = async (request) => {
+  const requestData = await request.json();
+
+  const questionData = {
+    courseID: requestData.courseID,
+    userUuid: requestData.userUuid,
+    llmAnswer: requestData.llmAnswer,
+  };
+
+  const questionResponse = await questionService.updateQuesitonLlm(
+    questionData
+  );
+
+  console.log("questionResponse");
+  console.log(questionResponse);
+  return new Response(JSON.stringify(questionResponse), {
+    headers: { "content-type": "application/json" },
+  });
 };
 
 const handlePostQuestions = async (request) => {
@@ -85,13 +117,14 @@ const handlePostQuestionsVotes = async (request) => {
   const courseID = requestData.courseID;
   console.log(courseID);
 
-  const questionVotes = await questionService.findQuestionVotesPerCourseID(courseID);
+  const questionVotes = await questionService.findQuestionVotesPerCourseID(
+    courseID
+  );
 
   return new Response(JSON.stringify(questionVotes), {
     headers: { "content-type": "application/json" },
   });
 };
-
 
 const handlePostAnswers = async (request) => {
   const requestData = await request.json();
@@ -158,6 +191,16 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/question/new" }),
     fn: handlePostNewQuestion,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/question/del" }),
+    fn: handlePostDeleteQuestion,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/question/llm" }),
+    fn: handlePostQuestionLlmAnswer,
   },
   {
     method: "POST",

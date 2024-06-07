@@ -58,7 +58,7 @@ const vote = async (data) => {
   const userUuid = data.userUuid;
   const voteType = data.voteType;
 
-  console.log(data)
+  console.log(data);
 
   // Check if the user has already voted for this question
   const existingVote = await sql`
@@ -87,6 +87,34 @@ const vote = async (data) => {
   `;
 };
 
+const delQuesiton = async (data) => {
+  const questionID = data.questionID
+
+  try {
+    await sql`
+    DELETE FROM questions
+    WHERE id = ${questionID}
+    `;
+
+    return new Response(
+      JSON.stringify({
+        status: 200,
+        data: "Question deleted successfully",
+      })
+    );
+  } catch (error) {
+    console.error("Error deleting question:", error.message);
+    return new Response(
+      JSON.stringify({
+        status: 400,
+        data: "Err",
+      })
+    );
+  }
+};
+
+
+
 const addNewQuesiton = async (data) => {
   const courseID = data.courseID;
   const userUuid = data.userUuid;
@@ -96,13 +124,30 @@ const addNewQuesiton = async (data) => {
     await sql`
     INSERT INTO questions (course_id, user_uuid, question_text)
     VALUES (${courseID}, ${userUuid}, ${question_text})
-  `;
+    `;
+
+    const insertedRow = await sql`
+    SELECT * FROM questions WHERE course_id = ${courseID} AND user_uuid = ${userUuid} AND question_text = ${question_text}
+    `;
+
     console.log("New question added successfully:");
-    return new Response("OK", { status: 200 });
+    return insertedRow;
   } catch (error) {
     console.error("Error adding new question:", error.message);
-    return new Response("err", { status: 400 });
+    //return new Response(
+    //  JSON.stringify({
+    //    status: 400,
+    //    data: "Err",
+    //  })
+    //);
+    return "err";
   }
+};
+
+const updateQuesitonLlm = async (data) => {
+  const courseID = data.courseID;
+  const userUuid = data.userUuid;
+  const llmAnswer = data.llmAnswer;
 };
 
 export {
@@ -111,4 +156,6 @@ export {
   findQuesitonID,
   vote,
   addNewQuesiton,
+  delQuesiton,
+  updateQuesitonLlm,
 };
