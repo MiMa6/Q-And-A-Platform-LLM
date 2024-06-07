@@ -145,9 +145,32 @@ const addNewQuesiton = async (data) => {
 };
 
 const updateQuesitonLlm = async (data) => {
+  console.log("Updating question");
+  console.log(data)
   const courseID = data.courseID;
+  const question_text = data.question_text;
   const userUuid = data.userUuid;
   const llmAnswer = data.llmAnswer;
+
+  try {
+    await sql`
+    UPDATE questions
+    SET llmanswer = ${llmAnswer}
+    WHERE course_id = ${courseID}
+    AND user_uuid = ${userUuid}
+    AND question_text = ${question_text}
+    `;
+    
+    console.log("Llm answer added successfully:");
+  } catch (error) {
+    console.error("Error updating question:", error.message);
+    return new Response(
+      JSON.stringify({
+        status: 400,
+        data: "Err",
+      })
+    );
+  }
 };
 
 export {

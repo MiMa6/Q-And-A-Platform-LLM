@@ -86,6 +86,7 @@ const handlePostQuestionLlmAnswer = async (request) => {
   const questionData = {
     courseID: requestData.courseID,
     userUuid: requestData.userUuid,
+    question_text: requestData.question_text,
     llmAnswer: requestData.llmAnswer,
   };
 

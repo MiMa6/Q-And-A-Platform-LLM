@@ -45,6 +45,24 @@
     console.log($questions);
   };
 
+  const delQuestion = async (questionID) => {
+    const data = {
+      questionID: questionID,
+    };
+
+    const responseQuestion = await fetch("/api/qa/question/del", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await responseQuestion;
+    console.log(jsonData);
+    getAllQuestions();
+  };
+
   const postNewQuestion = async () => {
     const data = {
       courseID: courseId,
@@ -67,24 +85,6 @@
     getAllQuestions();
   };
 
-  const delQuestion = async (questionID) => {
-    const data = {
-      questionID: questionID,
-    };
-
-    const responseQuestion = await fetch("/api/qa/question/del", {
-      method: "Post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    const jsonData = await responseQuestion;
-    console.log(jsonData);
-    getAllQuestions();
-  };
-
   const createLlmAnswer = async (data) => {
     const dataLlm = {
       question: newQuestionText,
@@ -102,13 +102,29 @@
     const jsonData = await response.json();
     const llmAnswer = jsonData[0].generated_text;
     console.log(llmAnswer);
-    //const responseLlmAnswer = await fetch("/api/qa/question/llm", {
-    //  method: "Post",
-    //  headers: {
-    //    "Content-Type": "application/json",
-    //  },
-    //  body: JSON.stringify({...data, llmAnswer: llmAnswer}),
-    //});
+
+    const questionData = {
+      ... data,
+      llmAnswer: llmAnswer,
+    }
+
+
+    updateQuestionLlmAnswer(questionData);
+  };
+
+  const updateQuestionLlmAnswer = async (data) => {
+    const response = await fetch("/api/qa/question/llm", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    
+    const jsonData = await response;
+    console.log("updateQuestionLlmAnswer response");
+    console.log(jsonData);
+
   };
 
   const getAllQuestionVotes = async () => {
