@@ -2,6 +2,15 @@
   import { userUuid } from "../stores/stores.js";
 </script>
 
-<nav class="p-4 mb-4 shadow">
-  <span class="text-2xl text-gray-700 font-serif">Hello {$userUuid}!</span>
-</nav>
+<div class="font-sans text-base font-normal">
+  <header>
+    <div
+      class="w-full p-10 top-4 transparent flex flex-col items-center justify-between md"
+    >
+      <!-- title -->
+      <h2 class="text-3xl text-grey-600  ">EduLearn - Q&A Platform</h2>
+      <!-- sub title -->
+      <h2 class="text-xl text-grey-600 ">Modern Web Development | Front-end | Back-end</h2>
+    </div>
+  </header>
+</div>
