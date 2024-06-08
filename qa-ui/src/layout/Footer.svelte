@@ -1,5 +1,5 @@
 <footer
-  class="font-sans text-base font-normal text-gray-700 dark:text-gray-200 bg-surface-4++ dark:bg-surfacedark-100"
+  class="font-sans text-base font-normal text-gray-700"
 >
   <div class="p-4 flex flex-row justify-center">
     <div class="flex flex-col gap-2 px-2 pt-20">

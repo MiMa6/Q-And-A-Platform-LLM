@@ -87,10 +87,19 @@ const vote = async (data) => {
   `;
 };
 
-const delQuesiton = async (data) => {
-  const questionID = data.questionID
+const delQuestion = async (data) => {
+  const questionID = data.questionID;
 
-  try {
+  try { 
+    await sql`
+    DELETE FROM answers 
+    WHERE question_id = ${questionID}
+    `;
+    await sql`
+    DELETE FROM question_votes
+    WHERE question_id = ${questionID}
+    `;
+
     await sql`
     DELETE FROM questions
     WHERE id = ${questionID}
@@ -112,8 +121,6 @@ const delQuesiton = async (data) => {
     );
   }
 };
-
-
 
 const addNewQuesiton = async (data) => {
   const courseID = data.courseID;
@@ -146,7 +153,7 @@ const addNewQuesiton = async (data) => {
 
 const updateQuesitonLlm = async (data) => {
   console.log("Updating question");
-  console.log(data)
+  console.log(data);
   const courseID = data.courseID;
   const question_text = data.question_text;
   const userUuid = data.userUuid;
@@ -160,7 +167,7 @@ const updateQuesitonLlm = async (data) => {
     AND user_uuid = ${userUuid}
     AND question_text = ${question_text}
     `;
-    
+
     console.log("Llm answer added successfully:");
   } catch (error) {
     console.error("Error updating question:", error.message);
@@ -179,6 +186,6 @@ export {
   findQuesitonID,
   vote,
   addNewQuesiton,
-  delQuesiton,
+  delQuestion,
   updateQuesitonLlm,
 };

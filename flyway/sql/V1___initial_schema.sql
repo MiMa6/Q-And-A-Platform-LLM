@@ -26,6 +26,7 @@ CREATE TYPE VOTE_TYPE AS ENUM ('upvote', 'downvote');
 
 CREATE TABLE answer_votes (
 	id SERIAL PRIMARY KEY,
+	question_id INTEGER REFERENCES questions(id),
 	answer_id INTEGER REFERENCES answers(id),
 	user_uuid TEXT NOT NULL,
 	vote VOTE_TYPE NOT NULL DEFAULT 'downvote',

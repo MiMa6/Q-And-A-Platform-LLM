@@ -67,6 +67,21 @@ const handlePostNewQuestion = async (request) => {
   return questionResponse;
 };
 
+const handlePostNewAnswer = async (request) => {
+  const requestData = await request.json();
+
+  const answerData = {
+    questionID: requestData.questionID,
+    userUuid: requestData.userUuid,
+    answer_text: requestData.answer_text,
+  };
+
+  console.log(answerData);
+
+  const answerResponse = await answerService.addNewAnswer(answerData);
+  return answerResponse;
+};
+
 const handlePostDeleteQuestion = async (request) => {
   const requestData = await request.json();
 
@@ -76,8 +91,22 @@ const handlePostDeleteQuestion = async (request) => {
 
   console.log(questionData);
 
-  const questionResponse = await questionService.delQuesiton(questionData);
+  const questionResponse = await questionService.delQuestion(questionData);
   return questionResponse;
+};
+
+
+const handlePostDeleteAnswer = async (request) => {
+  const requestData = await request.json();
+
+  const answerData = {
+    answerID: requestData.answerID
+  };
+
+  console.log(answerData);
+
+  const answerResponse = await answerService.delAnswer(answerData);
+  return answerResponse;
 };
 
 const handlePostQuestionLlmAnswer = async (request) => {
@@ -127,6 +156,20 @@ const handlePostQuestionsVotes = async (request) => {
   });
 };
 
+const handlePostAnswersVotes = async (request) => {
+  const requestData = await request.json();
+  const questionID = requestData.questionID;
+  console.log(questionID);
+
+  const answerVotes = await answerService.findAnswerVotesPerQuestionID(
+    questionID
+  );
+
+  return new Response(JSON.stringify(answerVotes), {
+    headers: { "content-type": "application/json" },
+  });
+};
+
 const handlePostAnswers = async (request) => {
   const requestData = await request.json();
   const questionID = requestData.questionID;
@@ -155,13 +198,23 @@ const handlePostGenerateAnswer = async (request) => {
 
 const handlePostVoteQuestion = async (request) => {
   const data = await request.json();
-  console.log("apis ny ");
   const response = await questionService.vote(data);
 
   return new Response(JSON.stringify(response), {
     headers: { "content-type": "application/json" },
   });
 };
+
+const handlePostVoteAnswer = async (request) => {
+  const data = await request.json();
+  const response = await answerService.vote(data);
+
+  return new Response(JSON.stringify(response), {
+    headers: { "content-type": "application/json" },
+  });
+};
+
+
 const urlMapping = [
   {
     method: "GET",
@@ -200,6 +253,11 @@ const urlMapping = [
   },
   {
     method: "POST",
+    pattern: new URLPattern({ pathname: "/answer/del" }),
+    fn: handlePostDeleteAnswer,
+  },
+  {
+    method: "POST",
     pattern: new URLPattern({ pathname: "/question/llm" }),
     fn: handlePostQuestionLlmAnswer,
   },
@@ -215,8 +273,18 @@ const urlMapping = [
   },
   {
     method: "POST",
+    pattern: new URLPattern({ pathname: "/answers/votes" }),
+    fn: handlePostAnswersVotes,
+  },
+  {
+    method: "POST",
     pattern: new URLPattern({ pathname: "/answers" }),
     fn: handlePostAnswers,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/answer/new" }),
+    fn: handlePostNewAnswer,
   },
   {
     method: "POST",
@@ -227,6 +295,11 @@ const urlMapping = [
     method: "POST",
     pattern: new URLPattern({ pathname: "/vote/question" }),
     fn: handlePostVoteQuestion,
+  },
+  {
+    method: "POST",
+    pattern: new URLPattern({ pathname: "/vote/answer" }),
+    fn: handlePostVoteAnswer,
   },
 ];
 

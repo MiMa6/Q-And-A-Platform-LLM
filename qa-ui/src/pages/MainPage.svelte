@@ -19,15 +19,15 @@
 </script>
 
 <main
-  class="font-sans text-base font-normal text-gray-700 dark:text-gray-200 bg-surface-400 dark:bg-surfacedark-200"
+  class="font-sans text-base font-normal text-gray-700  bg-surface-400"
 >
   <!-- content -->
   <div class="flex flex-col w-full gap-8 overflow-hidden">
     <div
-      class="flex flex-wrap w-full flex-col gap-8 md:p-10 bg-surface-400 dark:bg-surfacedark-100 rounded-2xl"
+      class="flex flex-wrap w-full flex-col gap-8 md:p-10 bg-surface-400 rounded-2xl"
     >
       <div
-        class="bg-neutral-10 dark:bg-neutral-900 p-6 md:p-8 border border-gray-200 dark:border-gray-700 rounded-2xl"
+        class="bg-neutral-10p-6 md:p-8 border border-gray-200  rounded-2xl"
       >
         <div class="flex flex-wrap flex-row gap-6 my-2">
           <!-- Search-->
