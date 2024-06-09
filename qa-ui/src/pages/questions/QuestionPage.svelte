@@ -23,6 +23,7 @@
     });
 
     const jsonData = await response.json();
+
     question = jsonData.data[0];
     console.log("$question");
     console.log(question);
@@ -42,7 +43,24 @@
     });
 
     const jsonData = await response.json();
-    answers.set(jsonData);
+
+    // Sort answers based on most recent post_time or vote_time
+    const combinedData = jsonData.map((answer) => {
+      const vote = $answerVotes.find((vote) => vote.answer_id === answer.id);
+
+      const recentTime = vote
+        ? Math.max(new Date(answer.post_time), new Date(vote.vote_time))
+        : new Date(answer.post_time);
+      return { ...answer, recent_time: recentTime };
+    });
+
+    // Sort combinedData by recent_time
+    combinedData.sort(
+      (a, b) => new Date(b.recent_time) - new Date(a.recent_time)
+    );
+    answers.set(combinedData);
+
+    console.log("Answers");
     console.log($answers);
   };
 
@@ -61,7 +79,7 @@
 
     const jsonData = await responseAnswer;
     console.log(jsonData);
-    getAnswers();
+    getAllAnswerData();
   };
 
   const postNewAnswer = async () => {
@@ -80,10 +98,11 @@
     });
     const jsonData = await responseNewAnswer;
     console.log(jsonData);
-    getAnswers();
+    getAllAnswerData();
   };
 
-  const getAllAnswerVotes = async () => {
+  const getAllAnswerData = async () => {
+    // GEt all answer botes
     const data = {
       questionID: questionID,
     };
@@ -99,7 +118,10 @@
     const jsonData = await response.json();
     answerVotes.set(jsonData);
 
+    console.log("Answer votes");
     console.log($answerVotes);
+
+    await getAnswers();
   };
 
   const postAnswervote = async (voteType, answerID) => {
@@ -120,25 +142,53 @@
 
     const jsonData = await response.json();
     console.log(jsonData);
-    getAllAnswerVotes();
+    getAllAnswerData();
   };
 
-  onMount(getAnswers);
+  function getLatestVoteTime(answerID) {
+    const votes = $answerVotes.filter((vote) => vote.answer_id === answerID);
+    if (votes.length === 0) {
+      return null;
+    }
+    const latestVote = votes.reduce((latest, current) => {
+      return new Date(current.vote_time) > new Date(latest.vote_time)
+        ? current
+        : latest;
+    });
+    return convertToHelsinkiTime(latestVote.vote_time);
+  }
+
+  function convertToHelsinkiTime(utcTimestamp) {
+    const date = new Date(utcTimestamp);
+
+    // Create an Intl.DateTimeFormat object for Helsinki time
+    const options = {
+      timeZone: "Europe/Helsinki",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    const formatter = new Intl.DateTimeFormat("en-GB", options);
+    const formattedDate = formatter.format(date);
+
+    // Format the date string to "Year-Month-Day Hour:Minutes"
+    const [day, month, year, hour, minute] = formattedDate.match(/\d+/g);
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  }
+
   onMount(getQuestionById);
-  onMount(getAllAnswerVotes);
+  onMount(getAllAnswerData);
 </script>
 
-<main
-  class="font-sans text-base font-normal text-gray-700  bg-surface-400"
->
+<main class="font-sans text-base font-normal text-gray-700 bg-surface-400">
   <!-- content -->
   <div class="flex flex-col w-full gap-8 overflow-hidden">
-    <div
-      class="flex flex-wrap w-full flex-col gap-8 md:p-10 "
-    >
-      <div
-        class="bg-neutral-10 p-6 md:p-8 border border-gray-200"
-      >
+    <div class="flex flex-wrap w-full flex-col gap-8 md:p-10">
+      <div class="bg-neutral-10 p-6 md:p-8 border border-gray-200">
         <div
           class="flex flex-wrap flex-row gap-6 mb-12 !items-center !justify-center rounded-xl"
         >
@@ -150,19 +200,11 @@
           </div>
           <!-- Question end -->
 
-          <!-- LLM answer -->
-          <div class="rounded-xl">
-            <p class="text-sm text-slate-400 max-w-3xl px-6 py-4">
-              LLM answer: {question.llmanswer}
-            </p>
-          </div>
-          <!-- LLM answer end -->
-
           <!-- Create Answer -->
 
           <div class="flex w-full max-w-3xl px-6">
             <button
-              class=" rounded-xl bg-primary-100 mr-4 bg-primary-100  bg-primary-100 hover:bg-primary-200"
+              class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 bg-primary-100 hover:bg-primary-200"
               on:click={() => postNewAnswer()}
             >
               <div class="flex flex-col w-full">
@@ -191,10 +233,24 @@
 
           <div class="flex flex-col w-full max-w-3xl">
             <!-- Answers -->
+
+            <!-- LLM answer -->
+            <div class="mb-5 flex items-center justify-center">
+              <h1 class="text-lg text-center text-gray-600 pb-2">LLM answer</h1>
+            </div>
+
+            <div class="!inline-flex !items-center rounded-xl px-2 mx-2">
+              <div>
+                <p class="text-kg text-gray-600">
+                  {question.llmanswer}
+                </p>
+              </div>
+            </div>
+            <!-- LLM answer end -->
             <section class="p-5">
               <div class="mb-5 flex items-center justify-center">
                 <h1 class="text-lg text-center text-gray-600 pb-2">
-                  UserAnswers
+                  User answers
                 </h1>
               </div>
 
@@ -228,15 +284,31 @@
                         </div>
                       </button>
                       <!-- vote answer end-->
+
+                      <!-- Answer info -->
                       <div
-                        class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
+                        class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2"
                       >
                         <div>
                           <p class="text-kg text-gray-600">
                             {answer.answer_text}
                           </p>
+                          <p class="text-gray-600 text-xs">
+                            Post time: {convertToHelsinkiTime(
+                              answer.post_time
+                            )}
+                          </p>
+                          {#if $answerVotes.some((vote) => vote.answer_id === answer.id)}
+                            <p class="text-gray-600 text-xs">
+                              Latest vote time: {convertToHelsinkiTime(
+                                getLatestVoteTime(answer.id)
+                              )}
+                            </p>
+                          {/if}
                         </div>
                       </div>
+                      <!-- Answer info end-->
+
                       <!-- delete answer-->
                       {#if answer.user_uuid === $userUuid}
                         <button

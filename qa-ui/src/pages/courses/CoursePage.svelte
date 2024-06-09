@@ -41,7 +41,26 @@
     });
 
     const jsonData = await response.json();
-    questions.set(jsonData);
+
+    // Sort questions based on most recent post_time or vote_time
+    const combinedData = jsonData.map((question) => {
+      const vote = $questionVotes.find(
+        (vote) => vote.question_id === question.id
+      );
+
+      const recentTime = vote
+        ? Math.max(new Date(question.post_time), new Date(vote.vote_time))
+        : new Date(question.post_time);
+      return { ...question, recent_time: recentTime };
+    });
+
+    // Sort combinedData by recent_time
+    combinedData.sort(
+      (a, b) => new Date(b.recent_time) - new Date(a.recent_time)
+    );
+    questions.set(combinedData);
+
+    console.log("Questions");
     console.log($questions);
   };
 
@@ -60,7 +79,7 @@
 
     const jsonData = await responseQuestion;
     console.log(jsonData);
-    getAllQuestions();
+    getAllQuestionData();
   };
 
   const postNewQuestion = async () => {
@@ -82,7 +101,7 @@
     console.log(jsonData);
 
     createLlmAnswer(data);
-    getAllQuestions();
+    getAllQuestionData();
   };
 
   const createLlmAnswer = async (data) => {
@@ -105,7 +124,7 @@
 
     const questionData = {
       ...data,
-      llmAnswer: llmAnswer,
+      llmAnswgetAllQuestionDataer: llmAnswer,
     };
 
     updateQuestionLlmAnswer(questionData);
@@ -125,7 +144,8 @@
     console.log(jsonData);
   };
 
-  const getAllQuestionVotes = async () => {
+  const getAllQuestionData = async () => {
+    // Get all question votes
     const data = {
       courseID: courseId,
     };
@@ -141,7 +161,10 @@
     const jsonData = await response.json();
     questionVotes.set(jsonData);
 
+    console.log("Question votes");
     console.log($questionVotes);
+
+    await getAllQuestions();
   };
 
   const postQuestionvote = async (voteType, questionID) => {
@@ -162,25 +185,55 @@
 
     const jsonData = await response.json();
     console.log(jsonData);
-    getAllQuestionVotes();
+    getAllQuestionData();
   };
 
+  function getLatestVoteTime(questionId) {
+    const votes = $questionVotes.filter(
+      (vote) => vote.question_id === questionId
+    );
+    if (votes.length === 0) {
+      return null;
+    }
+    const latestVote = votes.reduce((latest, current) => {
+      return new Date(current.vote_time) > new Date(latest.vote_time)
+        ? current
+        : latest;
+    });
+    return convertToHelsinkiTime(latestVote.vote_time);
+  }
+
+  function convertToHelsinkiTime(utcTimestamp) {
+    const date = new Date(utcTimestamp);
+
+    // Create an Intl.DateTimeFormat object for Helsinki time
+    const options = {
+      timeZone: "Europe/Helsinki",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    const formatter = new Intl.DateTimeFormat("en-GB", options);
+    const formattedDate = formatter.format(date);
+
+    // Format the date string to "Year-Month-Day Hour:Minutes"
+    const [day, month, year, hour, minute] = formattedDate.match(/\d+/g);
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  }
+
   onMount(getCourse);
-  onMount(getAllQuestions);
-  onMount(getAllQuestionVotes);
+  onMount(getAllQuestionData);
 </script>
 
-<main
-  class="font-sans text-base font-normal text-gray-700  bg-surface-400"
->
+<main class="font-sans text-base font-normal text-gray-700 bg-surface-400">
   <!-- content -->
   <div class="flex flex-col w-full gap-8 overflow-hidden">
-    <div
-      class="flex flex-wrap w-full flex-col gap-8 md:p-10"
-    >
-      <div
-        class="bg-neutral-10 p-6 md:p-8 border border-gray-200"
-      >
+    <div class="flex flex-wrap w-full flex-col gap-8 md:p-10">
+      <div class="bg-neutral-10 p-6 md:p-8 border border-gray-200">
         <div
           class="flex flex-wrap flex-row gap-6 mb-12 !items-center !justify-center rounded-xl"
         >
@@ -264,16 +317,31 @@
                         </div>
                       </button>
                       <!-- vote questions end-->
+
+                      <!-- Question info -->
                       <a
                         href="/questions/{question.id}"
                         class="flex space-x-4 rounded-xl p-4 hover:bg-primary-200"
                       >
                         <div>
-                          <p class="font-semibold text-gray-600">
+                          <p class="font-semibold text-gray-600 mb-2">
                             {question.question_text}
                           </p>
+                          <p class="text-gray-600 text-xs">
+                            Post time: {convertToHelsinkiTime(
+                              question.post_time
+                            )}
+                          </p>
+                          {#if $questionVotes.some((vote) => vote.question_id === question.id)}
+                            <p class="text-gray-600 text-xs">
+                              Latest vote time: {convertToHelsinkiTime(
+                                getLatestVoteTime(question.id)
+                              )}
+                            </p>
+                          {/if}
                         </div>
                       </a>
+                      <!-- Question info end -->
                       <!-- delete questions-->
                       {#if question.user_uuid === $userUuid}
                         <button
