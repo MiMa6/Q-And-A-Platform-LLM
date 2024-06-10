@@ -90,7 +90,7 @@ const vote = async (data) => {
 const delQuestion = async (data) => {
   const questionID = data.questionID;
 
-  try { 
+  try {
     await sql`
     DELETE FROM answers 
     WHERE question_id = ${questionID}
@@ -157,12 +157,14 @@ const updateQuesitonLlm = async (data) => {
   const courseID = data.courseID;
   const question_text = data.question_text;
   const userUuid = data.userUuid;
-  const llmAnswer = data.llmAnswer;
+  const llmAnswer1 = data.llmAnswer1;
+  const llmAnswer2 = data.llmAnswer2;
+  const llmAnswer3 = data.llmAnswer3;
 
   try {
     await sql`
     UPDATE questions
-    SET llmanswer = ${llmAnswer}
+    SET llmanswer1 = ${llmAnswer1} , llmanswer2 = ${llmAnswer2}, llmanswer3 = ${llmAnswer3}
     WHERE course_id = ${courseID}
     AND user_uuid = ${userUuid}
     AND question_text = ${question_text}

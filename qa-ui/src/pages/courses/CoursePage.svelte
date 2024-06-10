@@ -9,6 +9,9 @@
 
   let course = [];
 
+  let isLoading = false;
+  let showMessage = false;
+
   const getCourse = async () => {
     const data = {
       courseID: courseId,
@@ -83,13 +86,15 @@
   };
 
   const postNewQuestion = async () => {
+    isLoading = true;
+
     const data = {
       courseID: courseId,
       userUuid: $userUuid,
       question_text: newQuestionText,
     };
 
-    const responseNewQuesiton = await fetch("/api/qa/question/new", {
+    const responseNewQuestion = await fetch("/api/qa/question/new", {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -97,34 +102,46 @@
       body: JSON.stringify(data),
     });
 
-    const jsonData = await responseNewQuesiton;
+    const jsonData = await responseNewQuestion;
     console.log(jsonData);
 
-    createLlmAnswer(data);
+    createLlmAnswers(data);
     getAllQuestionData();
   };
 
-  const createLlmAnswer = async (data) => {
+  const createLlmAnswers = async (data) => {
     const dataLlm = {
       question: newQuestionText,
     };
+    const llm_answers = [];
 
-    console.log(JSON.stringify(dataLlm));
-    const response = await fetch("/api/llm", {
-      method: "Post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataLlm),
+    for (let i = 0; i < 3; i++) {
+      const response = await fetch("/api/llm", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataLlm),
+      });
+
+      const jsonData = await response.json();
+      const llmAnswer = jsonData[0].generated_text;
+      llm_answers.push(llmAnswer);
+    }
+
+    console.log(llm_answers);
+
+    const filteredAnswers = llm_answers.filter((answer) => {
+      return !answer.toLowerCase().startsWith(newQuestionText);
     });
 
-    const jsonData = await response.json();
-    const llmAnswer = jsonData[0].generated_text;
-    console.log(llmAnswer);
+    console.log(filteredAnswers);
 
     const questionData = {
       ...data,
-      llmAnswgetAllQuestionDataer: llmAnswer,
+      llmAnswer1: llm_answers[0].replace(newQuestionText, ""),
+      llmAnswer2: llm_answers[1].replace(newQuestionText, ""),
+      llmAnswer3: llm_answers[2].replace(newQuestionText, ""),
     };
 
     updateQuestionLlmAnswer(questionData);
@@ -142,6 +159,14 @@
     const jsonData = await response;
     console.log("updateQuestionLlmAnswer response");
     console.log(jsonData);
+
+    isLoading = false;
+    showMessage = true;
+
+    // Show "answers updated" message for 3 seconds
+    setTimeout(() => {
+      showMessage = false;
+    }, 3000);
   };
 
   const getAllQuestionData = async () => {
@@ -274,6 +299,26 @@
                   class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
                 />
               </div>
+              {#if isLoading}
+                <div
+                  class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 text-gray-900"
+                >
+                  <h1 class="text-lg text-center text-gray-600 pb-2">
+                    Generating LLM answers...
+                  </h1>
+                  <span class="material-symbols-outlined"> Downloading </span>
+                </div>
+              {/if}
+              {#if showMessage}
+                <div
+                  class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 text-gray-900"
+                >
+                  <h1 class="text-lg text-center text-gray-600">
+                    Answers updated
+                  </h1>
+                  <span class="material-symbols-outlined"> check_circle </span>
+                </div>
+              {/if}
             </div>
           </div>
 
