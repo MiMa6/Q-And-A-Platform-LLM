@@ -236,13 +236,19 @@
 
             <!-- LLM answer -->
             <div class="mb-5 flex items-center justify-center">
-              <h1 class="text-lg text-center text-gray-600 pb-2">LLM answer</h1>
+              <h1 class="text-lg text-center text-gray-600 pb-2">LLM answers</h1>
             </div>
 
             <div class="!inline-flex !items-center rounded-xl px-2 mx-2">
               <div>
-                <p class="text-kg text-gray-600">
-                  {question.llmanswer}
+                <p class="text-kg text-gray-600 mb-2">
+                  Answer 1: {question.llmanswer1}
+                </p>
+                <p class="text-kg text-gray-600 mb-2">
+                  Answer 2: {question.llmanswer2}
+                </p>
+                <p class="text-kg text-gray-600 mb-2">
+                  Answer 3: {question.llmanswer3}
                 </p>
               </div>
             </div>

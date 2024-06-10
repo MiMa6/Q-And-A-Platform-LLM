@@ -10,7 +10,9 @@ CREATE TABLE questions (
 	course_id INTEGER REFERENCES courses(id),
 	user_uuid TEXT NOT NULL,
 	question_text TEXT NOT NULL,
-	llmanswer TEXT NOT NULL DEFAULT '',
+	llmanswer1 TEXT NOT NULL DEFAULT '',
+	llmanswer2 TEXT NOT NULL DEFAULT '',
+	llmanswer3 TEXT NOT NULL DEFAULT '',
 	post_time TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

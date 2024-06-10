@@ -116,7 +116,9 @@ const handlePostQuestionLlmAnswer = async (request) => {
     courseID: requestData.courseID,
     userUuid: requestData.userUuid,
     question_text: requestData.question_text,
-    llmAnswer: requestData.llmAnswer,
+    llmAnswer1: requestData.llmAnswer1,
+    llmAnswer2: requestData.llmAnswer2,
+    llmAnswer3: requestData.llmAnswer3,
   };
 
   const questionResponse = await questionService.updateQuesitonLlm(
