@@ -10,6 +10,7 @@
   let course = [];
 
   let isLoading = false;
+  let showMessage = false;
 
   const getCourse = async () => {
     const data = {
@@ -138,9 +139,9 @@
 
     const questionData = {
       ...data,
-      llmAnswer1: llm_answers[0],
-      llmAnswer2: llm_answers[1],
-      llmAnswer3: llm_answers[2],
+      llmAnswer1: llm_answers[0].replace(newQuestionText, ""),
+      llmAnswer2: llm_answers[1].replace(newQuestionText, ""),
+      llmAnswer3: llm_answers[2].replace(newQuestionText, ""),
     };
 
     updateQuestionLlmAnswer(questionData);
@@ -158,7 +159,14 @@
     const jsonData = await response;
     console.log("updateQuestionLlmAnswer response");
     console.log(jsonData);
+
     isLoading = false;
+    showMessage = true;
+
+    // Show "answers updated" message for 3 seconds
+    setTimeout(() => {
+      showMessage = false;
+    }, 3000);
   };
 
   const getAllQuestionData = async () => {
@@ -296,9 +304,19 @@
                   class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 text-gray-900"
                 >
                   <h1 class="text-lg text-center text-gray-600 pb-2">
-                    LLM answers loading...
+                    Generating LLM answers...
                   </h1>
                   <span class="material-symbols-outlined"> Downloading </span>
+                </div>
+              {/if}
+              {#if showMessage}
+                <div
+                  class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 text-gray-900"
+                >
+                  <h1 class="text-lg text-center text-gray-600">
+                    Answers updated
+                  </h1>
+                  <span class="material-symbols-outlined"> check_circle </span>
                 </div>
               {/if}
             </div>

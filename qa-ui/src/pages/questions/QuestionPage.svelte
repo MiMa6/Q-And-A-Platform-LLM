@@ -9,6 +9,9 @@
 
   let question = [];
 
+  let isLoading = false;
+  let showMessage = false;
+
   const getQuestionById = async () => {
     const data = {
       questionID: questionID,
@@ -180,6 +183,68 @@
     return `${year}-${month}-${day} ${hour}:${minute}`;
   }
 
+  const createLlmAnswers = async () => {
+    isLoading = true;
+    const dataQuestion = {
+      courseID: question.course_id,
+      userUuid: $userUuid,
+      question_text: question.question_text,
+    };
+
+    const dataLlm = {
+      question: question.question_text,
+    };
+    const llm_answers = [];
+
+    for (let i = 0; i < 3; i++) {
+      const response = await fetch("/api/llm", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataLlm),
+      });
+
+      const jsonData = await response.json();
+      const llmAnswer = jsonData[0].generated_text;
+      llm_answers.push(llmAnswer);
+    }
+
+    console.log(llm_answers);
+
+    const questionData = {
+      ...dataQuestion,
+      llmAnswer1: llm_answers[0].replace(question.question_text, ""),
+      llmAnswer2: llm_answers[1].replace(question.question_text, ""),
+      llmAnswer3: llm_answers[2].replace(question.question_text, ""),
+    };
+
+    updateQuestionLlmAnswer(questionData);
+  };
+
+  const updateQuestionLlmAnswer = async (data) => {
+    const response = await fetch("/api/qa/question/llm", {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const jsonData = await response;
+    console.log("updateQuestionLlmAnswer response");
+    console.log(jsonData);
+    getQuestionById();
+
+    isLoading = false;
+    showMessage = true;
+
+    // Show "answers updated" message for 3 seconds
+    setTimeout(() => {
+      showMessage = false;
+    }, 3000);
+  };
+
   onMount(getQuestionById);
   onMount(getAllAnswerData);
 </script>
@@ -212,6 +277,15 @@
                 <span class="material-symbols-outlined"> add </span>
               </div>
             </button>
+            <button
+              class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 bg-primary-100 hover:bg-primary-200"
+              on:click={() => createLlmAnswers()}
+            >
+              <div class="flex flex-col w-full">
+                <p class="text-sm text-gray-600">Generate LLM Answers</p>
+                <span class="material-symbols-outlined"> add </span>
+              </div>
+            </button>
             <div class="flex flex-col w-full">
               <div
                 class="rounded-xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary-100"
@@ -226,6 +300,26 @@
                   class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
                 />
               </div>
+              {#if isLoading}
+                <div
+                  class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 text-gray-900"
+                >
+                  <h1 class="text-lg text-center text-gray-600 pb-2">
+                    Generating LLM answers...
+                  </h1>
+                  <span class="material-symbols-outlined"> Downloading </span>
+                </div>
+              {/if}
+              {#if showMessage}
+                <div
+                  class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 text-gray-900"
+                >
+                  <h1 class="text-lg text-center text-gray-600">
+                    Answers updated
+                  </h1>
+                  <span class="material-symbols-outlined"> check_circle </span>
+                </div>
+              {/if}
             </div>
           </div>
 
@@ -236,7 +330,9 @@
 
             <!-- LLM answer -->
             <div class="mb-5 flex items-center justify-center">
-              <h1 class="text-lg text-center text-gray-600 pb-2">LLM answers</h1>
+              <h1 class="text-lg text-center text-gray-600 pb-2">
+                LLM answers
+              </h1>
             </div>
 
             <div class="!inline-flex !items-center rounded-xl px-2 mx-2">
@@ -300,9 +396,7 @@
                             {answer.answer_text}
                           </p>
                           <p class="text-gray-600 text-xs">
-                            Post time: {convertToHelsinkiTime(
-                              answer.post_time
-                            )}
+                            Post time: {convertToHelsinkiTime(answer.post_time)}
                           </p>
                           {#if $answerVotes.some((vote) => vote.answer_id === answer.id)}
                             <p class="text-gray-600 text-xs">
