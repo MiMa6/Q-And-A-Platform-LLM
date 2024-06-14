@@ -62,9 +62,15 @@ test("Create new question and show it in UI", async ({ page }) => {
   const questionText = await questionTextElement.textContent();
   console.log(questionText);
   expect(questionText).toBe(testQuestion);
+
+  // Delete question
+  const deleteQuestionButton = await page.$('button[type="deleteQuestionButton"]');
+  const isDeleteButtonVisible = await deleteQuestionButton.isVisible();
+  expect(isDeleteButtonVisible).toBe(true);
+  await deleteQuestionButton.click();
 });
 
-test("Vote created question", async ({ page }) => {
+test("Vote question", async ({ page }) => {
   await page.goto("http://localhost:7800/courses/1");
 
   await page.waitForSelector('button[type="voteQuestionButton"]');
@@ -86,5 +92,14 @@ test("Vote created question", async ({ page }) => {
   const voteQuestionText = await voteQuestionTextElement.textContent();
   console.log(voteQuestionText);
   expect(voteQuestionText).toBe("1");
+
+  // Delete vote (By clicking button again)
+  await voteQuestionButton.click();
+  await page.waitForTimeout(1000);
+
+  const voteQuestionText2 = await voteQuestionTextElement.textContent();
+  console.log(voteQuestionText2);
+  expect(voteQuestionText2).toBe("0");
+
 });
 

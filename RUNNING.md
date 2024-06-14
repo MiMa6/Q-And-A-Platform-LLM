@@ -10,8 +10,10 @@ Running all tests
 docker compose run --rm --entrypoint=npx playwright playwright test
 ```
 
-Running test file
+Running test files one by one
 
 ```bash
+ docker-compose run --rm --entrypoint=npx playwright playwright test mainpage.spec.js
  docker-compose run --rm --entrypoint=npx playwright playwright test coursepage.spec.js
+docker-compose run --rm --entrypoint=npx playwright playwright test questionpage.spec.js
 ```
