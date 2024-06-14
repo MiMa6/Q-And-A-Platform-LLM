@@ -264,7 +264,10 @@
         >
           <!-- Course -->
           <div class="rounded-xl">
-            <h1 class="text-lg text-center text-gray-600 px-8 py-2">
+            <h1
+              type="heading"
+              class="text-lg text-center text-gray-600 px-8 py-2"
+            >
               {course.title}
             </h1>
             <p class="text-sm text-slate-400 max-w-3xl px-6 py-4">
@@ -275,8 +278,9 @@
 
           <!-- Create Question -->
 
-          <div class="flex w-full max-w-3xl px-6">
+          <div type="buttonDiv" class="flex w-full max-w-3xl px-6">
             <button
+              type="createButton"
               class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 hover:bg-primary-200"
               on:click={() => postNewQuestion()}
             >
@@ -291,6 +295,7 @@
               >
                 <input
                   type="text"
+                  data-testid="questionField"
                   bind:value={newQuestionText}
                   name="question_text"
                   id="questionTextInput"
@@ -342,7 +347,10 @@
                       <div
                         class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2 font-semibold text-gray-900"
                       >
-                        <p class="text-kg text-gray-600">
+                        <p
+                          type="voteQuestionText"
+                          class="text-kg text-gray-600"
+                        >
                           {$questionVotes.filter(
                             (obj) =>
                               obj.course_id === parseInt(courseId) &&
@@ -351,6 +359,7 @@
                         </p>
                       </div>
                       <button
+                        type="voteQuestionButton"
                         class="!inline-flex !items-center rounded-xl px-4 pt-2 mr-4 bg-primary-100 0 hover:bg-primary-200"
                         on:click={() => postQuestionvote("upvote", question.id)}
                       >
@@ -369,7 +378,10 @@
                         class="flex space-x-4 rounded-xl p-4 hover:bg-primary-200"
                       >
                         <div>
-                          <p class="font-semibold text-gray-600 mb-2">
+                          <p
+                            type="questionText"
+                            class="font-semibold text-gray-600 mb-2"
+                          >
                             {question.question_text}
                           </p>
                           <p class="text-gray-600 text-xs">
@@ -390,6 +402,7 @@
                       <!-- delete questions-->
                       {#if question.user_uuid === $userUuid}
                         <button
+                          type="deleteQuestionButton"
                           class="!inline-flex !items-center rounded-xl px-4 pt-2 ml-4 bg-error-300 hover:bg-error-400"
                           on:click={() => delQuestion(question.id)}
                         >

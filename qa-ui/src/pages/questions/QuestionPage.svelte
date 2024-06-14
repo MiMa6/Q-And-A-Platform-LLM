@@ -269,6 +269,7 @@
 
           <div class="flex w-full max-w-3xl px-6">
             <button
+              type="createButton"
               class=" rounded-xl bg-primary-100 mr-4 bg-primary-100 bg-primary-100 hover:bg-primary-200"
               on:click={() => postNewAnswer()}
             >
@@ -392,7 +393,7 @@
                         class="!inline-flex !items-center rounded-xl mt-4 px-2 mx-2"
                       >
                         <div>
-                          <p class="text-kg text-gray-600">
+                          <p type="answerText" class="text-kg text-gray-600">
                             {answer.answer_text}
                           </p>
                           <p class="text-gray-600 text-xs">
@@ -412,6 +413,7 @@
                       <!-- delete answer-->
                       {#if answer.user_uuid === $userUuid}
                         <button
+                          type="deleteAnswerButton"
                           class="!inline-flex !items-center rounded-xl px-4 pt-2 ml-4 bg-error-300 hover:bg-error-400"
                           on:click={() => delAnswer(answer.id)}
                         >

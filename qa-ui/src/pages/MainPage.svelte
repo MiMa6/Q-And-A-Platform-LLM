@@ -18,17 +18,13 @@
   onMount(getCourses);
 </script>
 
-<main
-  class="font-sans text-base font-normal text-gray-700  bg-surface-400"
->
+<main class="font-sans text-base font-normal text-gray-700 bg-surface-400">
   <!-- content -->
   <div class="flex flex-col w-full gap-8 overflow-hidden">
     <div
       class="flex flex-wrap w-full flex-col gap-8 md:p-10 bg-surface-400 rounded-2xl"
     >
-      <div
-        class="bg-neutral-10p-6 md:p-8 border border-gray-200  rounded-2xl"
-      >
+      <div class="bg-neutral-10p-6 md:p-8 border border-gray-200 rounded-2xl">
         <div class="flex flex-wrap flex-row gap-6 my-2">
           <!-- Search-->
           <div class="pt-2 relative mx-auto text-gray-600">
@@ -49,7 +45,7 @@
           <!-- Courses -->
           <section class="p-6">
             <div class="mb-4 flex items-center justify-between">
-              <h4 class="font-medium text-slate-500">Courses</h4>
+              <h4 type="heading" class="font-medium text-slate-500">Courses</h4>
               <div
                 class="rounded-md bg-pink-400/70 px-2 font-semibold text-gray-900"
               >
@@ -66,7 +62,10 @@
                     class="flex space-x-4 rounded-xl bg-white p-4 shadow-sm hover:bg-primary-100"
                   >
                     <div>
-                      <h1 class="font-semibold text-gray-600">
+                      <h1
+                        type="courseTitle"
+                        class="font-semibold text-gray-600"
+                      >
                         {course.title}
                       </h1>
                       <p class="text-sm text-slate-400">
