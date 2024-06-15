@@ -9,8 +9,39 @@
 
   let course = [];
 
+  let isLoadingQuestions = false;
   let isLoading = false;
   let showMessage = false;
+  let batch = 1;
+
+  function resetBatch() {
+    batch = 1;
+  }
+
+  const loadMoreQuestions = async () => {
+    isLoadingQuestions = true; // Set the loading flag to true
+
+    console.log("Loading more questions");
+    //const data = {
+    //  courseID: courseId,
+    //  batch: batch,
+    //};
+    //
+    //const response = await fetch("/api/qa/questions", {
+    //  method: "Post",
+    //  headers: {
+    //    "Content-Type": "application/json",
+    //  },
+    //  body: JSON.stringify(data),
+    //});
+    //
+    //const newQuestions = await response.json();
+    //
+    //questionsCombined = [...$questions, ...newQuestions]; // Append the new questions to the existing ones
+    //questions.set(questionsCombined);
+
+    isLoadingQuestions = false; // Set the loading flag back to false
+  };
 
   const getCourse = async () => {
     const data = {
@@ -190,6 +221,7 @@
     console.log($questionVotes);
 
     await getAllQuestions();
+    setupIntersectionObserver();
   };
 
   const postQuestionvote = async (voteType, questionID) => {
@@ -250,8 +282,40 @@
     return `${year}-${month}-${day} ${hour}:${minute}`;
   }
 
+  // Intersection Observer callback function
+  function handleIntersection(entries) {
+    if (entries[0].isIntersecting) {
+      //if (entries[0].isIntersecting && !isLoadingQuestions) {
+      //batch += 1;
+      //loadMoreQuestions();
+      console.log("Reached the last element!");
+    }
+  }
+
+  function setupIntersectionObserver() {
+    console.log("Setting up Intersection Observer...");
+    // Create a new Intersection Observer instance
+    const observer = new IntersectionObserver(handleIntersection, {
+      root: null, // Use the viewport as the root element
+      threshold: 0.1, // Trigger the callback when the target element is 10% visible
+    });
+
+    // Observe the last question element
+    const questionTextElements = document.querySelectorAll(
+      'p[type="questionText"]'
+    );
+    const lastElement = questionTextElements[questionTextElements.length - 1];
+    console.log(lastElement)
+    observer.observe(lastElement);
+
+    // Check if the observer is currently running
+    console.log("Observer is running:", observer.root !== null);
+  }
+
+  onMount(resetBatch);
   onMount(getCourse);
   onMount(getAllQuestionData);
+
 </script>
 
 <main class="font-sans text-base font-normal text-gray-700 bg-surface-400">
@@ -302,6 +366,11 @@
                   autocomplete="question_text"
                   placeholder="   Write question..."
                   class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
+                  on:keyup={(event) => {
+                    if (event.key === "Enter") {
+                      postNewQuestion();
+                    }
+                  }}
                 />
               </div>
               {#if isLoading}
@@ -341,7 +410,7 @@
               <!-- List questions-->
               <div>
                 {#each $questions as question}
-                  <div class="space-y-2 py-2">
+                  <div type="questionElement" class="space-y-2 py-2">
                     <div class="flex !items-center">
                       <!-- vote questions-->
                       <div
