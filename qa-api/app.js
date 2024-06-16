@@ -79,6 +79,7 @@ const handlePostNewAnswer = async (request) => {
   console.log(answerData);
 
   const answerResponse = await answerService.addNewAnswer(answerData);
+  console.log(answerResponse);
   return answerResponse;
 };
 
@@ -86,7 +87,7 @@ const handlePostDeleteQuestion = async (request) => {
   const requestData = await request.json();
 
   const questionData = {
-    questionID: requestData.questionID
+    questionID: requestData.questionID,
   };
 
   console.log(questionData);
@@ -95,12 +96,11 @@ const handlePostDeleteQuestion = async (request) => {
   return questionResponse;
 };
 
-
 const handlePostDeleteAnswer = async (request) => {
   const requestData = await request.json();
 
   const answerData = {
-    answerID: requestData.answerID
+    answerID: requestData.answerID,
   };
 
   console.log(answerData);
@@ -134,14 +134,22 @@ const handlePostQuestionLlmAnswer = async (request) => {
 
 const handlePostQuestions = async (request) => {
   const requestData = await request.json();
-  const courseID = requestData.courseID;
-  console.log(courseID);
 
-  const questions = await questionService.findQuestionsPerCourseID(courseID);
+  const questionData = {
+    courseID: requestData.courseID,
+    batch: requestData.batch,
+  };
+
+  console.log(questionData);
+
+  const questions = await questionService.findQuestionsPerCourseID(
+    questionData
+  );
 
   return new Response(JSON.stringify(questions), {
     headers: { "content-type": "application/json" },
   });
+
 };
 
 const handlePostQuestionsVotes = async (request) => {
@@ -174,10 +182,15 @@ const handlePostAnswersVotes = async (request) => {
 
 const handlePostAnswers = async (request) => {
   const requestData = await request.json();
-  const questionID = requestData.questionID;
-  console.log(questionID);
 
-  const answers = await answerService.findAll(questionID);
+  const data = {
+    questionID: requestData.questionID,
+    batch: requestData.batch,
+  };
+
+  console.log(data);
+
+  const answers = await answerService.findAnswersPerQuestionID(data);
 
   return new Response(JSON.stringify(answers), {
     headers: { "content-type": "application/json" },
@@ -215,7 +228,6 @@ const handlePostVoteAnswer = async (request) => {
     headers: { "content-type": "application/json" },
   });
 };
-
 
 const urlMapping = [
   {

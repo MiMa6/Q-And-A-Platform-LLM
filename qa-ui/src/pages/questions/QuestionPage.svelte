@@ -6,11 +6,18 @@
 
   export let questionID;
   let newAnswerText = "";
-
+  let lastElement = null;
   let question = [];
 
   let isLoading = false;
+  let observeState = true;
   let showMessage = false;
+  let batch = 1; // 1 batch = 20 questions
+
+  function resetBatch() {
+    batch = 1;
+    observeState = true;
+  }
 
   const getQuestionById = async () => {
     const data = {
@@ -32,9 +39,10 @@
     console.log(question);
   };
 
-  const getAnswers = async () => {
+  const getBatchOfAnswers = async () => {
     const data = {
       questionID: questionID,
+      batch: batch,
     };
 
     const response = await fetch("/api/qa/answers", {
@@ -61,6 +69,20 @@
     combinedData.sort(
       (a, b) => new Date(b.recent_time) - new Date(a.recent_time)
     );
+
+    if ($answers.length.toString() === combinedData.length.toString()) {
+      console.log("All answers fetched, stop observers");
+      observeState = false;
+      const intersectionObservers = Array.from(
+        document.querySelectorAll("[data-intersection-observer]")
+      );
+
+      // Disconnect each observer
+      intersectionObservers.forEach((observer) => {
+        observer.disconnect();
+      });
+    }
+
     answers.set(combinedData);
 
     console.log("Answers");
@@ -100,8 +122,16 @@
       body: JSON.stringify(data),
     });
     const jsonData = await responseNewAnswer;
+    console.log("Response data from posting new ansewr");
     console.log(jsonData);
-    getAllAnswerData();
+
+    if (jsonData.status === 200) {
+      getAllAnswerData();  
+    } else if (jsonData.status === 400) {
+      console.log("Error posting new answer");
+      alert("Error posting new answer: You can post Max 1 answer per user_uuid per minute");
+    }
+    
   };
 
   const getAllAnswerData = async () => {
@@ -124,7 +154,10 @@
     console.log("Answer votes");
     console.log($answerVotes);
 
-    await getAnswers();
+    await getBatchOfAnswers();
+    if (observeState) {
+      setupIntersectionObserver();
+    }
   };
 
   const postAnswervote = async (voteType, answerID) => {
@@ -245,7 +278,47 @@
     }, 3000);
   };
 
+  const observer = new IntersectionObserver(handleIntersection, {
+    root: null, // Use the viewport as the root element
+    threshold: 1, // Trigger the callback when the target element is 100% visible
+  });
+
+  // Intersection Observer callback function
+  async function handleIntersection(entries) {
+    if (entries[0].isIntersecting && observeState) {
+      //if (entries[0].isIntersecting && !isLoadingQuestions) {
+      batch += 1;
+      console.log("Reached the last element!");
+      console.log("Fetching new Batch:", batch);
+
+      await getBatchOfAnswers();
+
+      observer.unobserve(lastElement);
+
+      const answerTextElements = document.querySelectorAll(
+        'p[type="answerText"]'
+      );
+      lastElement = answerTextElements[answerTextElements.length - 1];
+
+      observer.observe(lastElement);
+    }
+  }
+
+  function setupIntersectionObserver() {
+    console.log("Setting up Intersection Observer...");
+    // Create a new Intersection Observer instance
+
+    // Observe the last question element
+    const answerTextElements = document.querySelectorAll(
+      'p[type="answerText"]'
+    );
+    lastElement = answerTextElements[answerTextElements.length - 1];
+    console.log(lastElement);
+    observer.observe(lastElement);
+  }
+
   onMount(getQuestionById);
+  onMount(resetBatch);
   onMount(getAllAnswerData);
 </script>
 

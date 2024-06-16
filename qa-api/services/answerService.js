@@ -1,11 +1,15 @@
 import { sql } from "../database/database.js";
 
-const findAll = async (id) => {
+const findAnswersPerQuestionID = async (data) => {
+  const questionID = data.questionID;
+  const batch = data.batch;
+
   return await sql`
     SELECT * 
     FROM answers
-    WHERE question_id = ${id};
-
+    WHERE question_id = ${questionID}
+    ORDER BY post_time DESC
+    LIMIT ${batch * 20};
   `;
 };
 
@@ -89,6 +93,27 @@ const addNewAnswer = async (data) => {
   const answer_text = data.answer_text;
 
   try {
+    // Check max 1 answer per minute
+    const lastAnswer = await sql`
+    SELECT * FROM answers
+    WHERE user_uuid = ${userUuid}
+    AND post_time > NOW() - INTERVAL '1 minute'
+    ORDER BY post_time DESC
+    LIMIT 1
+  `;
+
+    if (lastAnswer.length > 0) {
+      console.log("You can only post one question per minute");
+
+      return new Response(
+        JSON.stringify({
+          status: 400,
+          data: "Err",
+        }),
+        { status: 400 }
+      );
+    }
+
     await sql`
     INSERT INTO answers (question_id, user_uuid, answer_text)
     VALUES (${questionID}, ${userUuid}, ${answer_text})
@@ -99,10 +124,21 @@ const addNewAnswer = async (data) => {
     `;
 
     console.log("New Answer added successfully:");
-    return insertedRow;
+    return new Response(
+      JSON.stringify({
+        status: 200,
+      }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error adding new question:", error.message);
     return "err";
   }
 };
-export { findAll, addNewAnswer, delAnswer, findAnswerVotesPerQuestionID, vote };
+export {
+  findAnswersPerQuestionID,
+  addNewAnswer,
+  delAnswer,
+  findAnswerVotesPerQuestionID,
+  vote,
+};

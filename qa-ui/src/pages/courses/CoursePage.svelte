@@ -6,11 +6,18 @@
 
   export let courseId;
   let newQuestionText = "";
-
+  let lastElement = null;
   let course = [];
 
   let isLoading = false;
+  let observeState = true;
   let showMessage = false;
+  let batch = 1; // 1 batch = 20 questions
+
+  function resetBatch() {
+    batch = 1;
+    observeState = true;
+  }
 
   const getCourse = async () => {
     const data = {
@@ -30,9 +37,10 @@
     console.log(course);
   };
 
-  const getAllQuestions = async () => {
+  const getBatchOfQuestions = async () => {
     const data = {
       courseID: courseId,
+      batch: batch,
     };
 
     const response = await fetch("/api/qa/questions", {
@@ -61,8 +69,21 @@
     combinedData.sort(
       (a, b) => new Date(b.recent_time) - new Date(a.recent_time)
     );
-    questions.set(combinedData);
 
+    if ($questions.length.toString() === combinedData.length.toString()) {
+      console.log("All questions fetched, stop observers");
+      observeState = false;
+      const intersectionObservers = Array.from(
+        document.querySelectorAll("[data-intersection-observer]")
+      );
+
+      // Disconnect each observer
+      intersectionObservers.forEach((observer) => {
+        observer.disconnect();
+      });
+    }
+
+    questions.set(combinedData);
     console.log("Questions");
     console.log($questions);
   };
@@ -105,8 +126,13 @@
     const jsonData = await responseNewQuestion;
     console.log(jsonData);
 
-    createLlmAnswers(data);
-    getAllQuestionData();
+    if (jsonData.status == 200) {
+      createLlmAnswers(data);
+      getAllQuestionData();
+    } else if (jsonData.status == 400) {
+      console.log("Error posting new question");
+      alert("Error posting new question: You can post Max 1 question per user_uuid per minute")
+    }
   };
 
   const createLlmAnswers = async (data) => {
@@ -186,10 +212,10 @@
     const jsonData = await response.json();
     questionVotes.set(jsonData);
 
-    console.log("Question votes");
-    console.log($questionVotes);
-
-    await getAllQuestions();
+    await getBatchOfQuestions();
+    if (observeState) {
+      setupIntersectionObserver();
+    }
   };
 
   const postQuestionvote = async (voteType, questionID) => {
@@ -250,7 +276,46 @@
     return `${year}-${month}-${day} ${hour}:${minute}`;
   }
 
+  const observer = new IntersectionObserver(handleIntersection, {
+    root: null, // Use the viewport as the root element
+    threshold: 1, // Trigger the callback when the target element is 100% visible
+  });
+
+  // Intersection Observer callback function
+  async function handleIntersection(entries) {
+    if (entries[0].isIntersecting && observeState) {
+      //if (entries[0].isIntersecting && !isLoadingQuestions) {
+      batch += 1;
+      console.log("Reached the last element!");
+      console.log("Fetching new Batch:", batch);
+
+      await getBatchOfQuestions();
+
+      observer.unobserve(lastElement);
+
+      const questionTextElements = document.querySelectorAll(
+        'p[type="questionText"]'
+      );
+      lastElement = questionTextElements[questionTextElements.length - 1];
+
+      observer.observe(lastElement);
+    }
+  }
+
+  function setupIntersectionObserver() {
+    console.log("Setting up Intersection Observer...");
+    // Create a new Intersection Observer instance
+
+    // Observe the last question element
+    const questionTextElements = document.querySelectorAll(
+      'p[type="questionText"]'
+    );
+    lastElement = questionTextElements[questionTextElements.length - 1];
+    console.log(lastElement);
+    observer.observe(lastElement);
+  }
   onMount(getCourse);
+  onMount(resetBatch);
   onMount(getAllQuestionData);
 </script>
 
@@ -302,6 +367,11 @@
                   autocomplete="question_text"
                   placeholder="   Write question..."
                   class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
+                  on:keyup={(event) => {
+                    if (event.key === "Enter") {
+                      postNewQuestion();
+                    }
+                  }}
                 />
               </div>
               {#if isLoading}
@@ -341,7 +411,7 @@
               <!-- List questions-->
               <div>
                 {#each $questions as question}
-                  <div class="space-y-2 py-2">
+                  <div type="questionElement" class="space-y-2 py-2">
                     <div class="flex !items-center">
                       <!-- vote questions-->
                       <div
