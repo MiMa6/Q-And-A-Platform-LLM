@@ -9,6 +9,7 @@ const handleGetRoot = async (request) => {
   return new Response(`Hello from programmin API server`);
 };
 
+
 const handlePostSpecificCourse = async (request) => {
   const requestData = await request.json();
   const courseID = requestData.courseID;
@@ -67,6 +68,7 @@ const handlePostNewQuestion = async (request) => {
   return questionResponse;
 };
 
+
 const handlePostNewAnswer = async (request) => {
   const requestData = await request.json();
 
@@ -86,7 +88,7 @@ const handlePostDeleteQuestion = async (request) => {
   const requestData = await request.json();
 
   const questionData = {
-    questionID: requestData.questionID
+    questionID: requestData.questionID,
   };
 
   console.log(questionData);
@@ -95,12 +97,11 @@ const handlePostDeleteQuestion = async (request) => {
   return questionResponse;
 };
 
-
 const handlePostDeleteAnswer = async (request) => {
   const requestData = await request.json();
 
   const answerData = {
-    answerID: requestData.answerID
+    answerID: requestData.answerID,
   };
 
   console.log(answerData);
@@ -134,14 +135,21 @@ const handlePostQuestionLlmAnswer = async (request) => {
 
 const handlePostQuestions = async (request) => {
   const requestData = await request.json();
-  const courseID = requestData.courseID;
-  console.log(courseID);
 
-  const questions = await questionService.findQuestionsPerCourseID(courseID);
+  const questionData = {
+    courseID: requestData.courseID,
+    batch: requestData.batch,
+  };
+
+  console.log(questionData);
+
+  const questions = await questionService.findQuestionsPerCourseID(
+    questionData
+  );
 
   return new Response(JSON.stringify(questions), {
     headers: { "content-type": "application/json" },
-  });
+  });''
 };
 
 const handlePostQuestionsVotes = async (request) => {
@@ -215,7 +223,6 @@ const handlePostVoteAnswer = async (request) => {
     headers: { "content-type": "application/json" },
   });
 };
-
 
 const urlMapping = [
   {

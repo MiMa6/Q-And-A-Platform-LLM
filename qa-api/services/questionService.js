@@ -1,11 +1,16 @@
 import { sql } from "../database/database.js";
 
-const findQuestionsPerCourseID = async (id) => {
+const findQuestionsPerCourseID = async (data) => {
+
+  const courseID = data.courseID;
+  const batch = data.batch;
+
   return await sql`
     SELECT * 
     FROM questions
-    WHERE course_id = ${id}
-    ORDER BY post_time DESC;
+    WHERE course_id = ${courseID}
+    ORDER BY post_time DESC
+    LIMIT ${batch * 20};
   `;
 };
 

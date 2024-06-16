@@ -6,42 +6,18 @@
 
   export let courseId;
   let newQuestionText = "";
-
+  let lastElement = null;
   let course = [];
 
-  let isLoadingQuestions = false;
   let isLoading = false;
+  let observeState = true;
   let showMessage = false;
-  let batch = 1;
+  let batch = 1; // 1 batch = 20 questions
 
   function resetBatch() {
     batch = 1;
+    observeState = true;
   }
-
-  const loadMoreQuestions = async () => {
-    isLoadingQuestions = true; // Set the loading flag to true
-
-    console.log("Loading more questions");
-    //const data = {
-    //  courseID: courseId,
-    //  batch: batch,
-    //};
-    //
-    //const response = await fetch("/api/qa/questions", {
-    //  method: "Post",
-    //  headers: {
-    //    "Content-Type": "application/json",
-    //  },
-    //  body: JSON.stringify(data),
-    //});
-    //
-    //const newQuestions = await response.json();
-    //
-    //questionsCombined = [...$questions, ...newQuestions]; // Append the new questions to the existing ones
-    //questions.set(questionsCombined);
-
-    isLoadingQuestions = false; // Set the loading flag back to false
-  };
 
   const getCourse = async () => {
     const data = {
@@ -61,9 +37,10 @@
     console.log(course);
   };
 
-  const getAllQuestions = async () => {
+  const getBatchOfQuestions = async () => {
     const data = {
       courseID: courseId,
+      batch: batch,
     };
 
     const response = await fetch("/api/qa/questions", {
@@ -92,8 +69,21 @@
     combinedData.sort(
       (a, b) => new Date(b.recent_time) - new Date(a.recent_time)
     );
-    questions.set(combinedData);
 
+    if ($questions.length.toString() === combinedData.length.toString()) {
+      console.log("All questions fetched, stop observers");
+      observeState = false;
+      const intersectionObservers = Array.from(
+        document.querySelectorAll("[data-intersection-observer]")
+      );
+
+      // Disconnect each observer
+      intersectionObservers.forEach((observer) => {
+        observer.disconnect();
+      });
+    }
+
+    questions.set(combinedData);
     console.log("Questions");
     console.log($questions);
   };
@@ -217,11 +207,10 @@
     const jsonData = await response.json();
     questionVotes.set(jsonData);
 
-    console.log("Question votes");
-    console.log($questionVotes);
-
-    await getAllQuestions();
-    setupIntersectionObserver();
+    await getBatchOfQuestions();
+    if (observeState) {
+      setupIntersectionObserver();
+    }
   };
 
   const postQuestionvote = async (voteType, questionID) => {
@@ -282,40 +271,47 @@
     return `${year}-${month}-${day} ${hour}:${minute}`;
   }
 
+  const observer = new IntersectionObserver(handleIntersection, {
+    root: null, // Use the viewport as the root element
+    threshold: 1, // Trigger the callback when the target element is 100% visible
+  });
+
   // Intersection Observer callback function
-  function handleIntersection(entries) {
-    if (entries[0].isIntersecting) {
+  async function handleIntersection(entries) {
+    if (entries[0].isIntersecting && observeState) {
       //if (entries[0].isIntersecting && !isLoadingQuestions) {
-      //batch += 1;
-      //loadMoreQuestions();
+      batch += 1;
       console.log("Reached the last element!");
+      console.log("Fetching new Batch:", batch);
+
+      await getBatchOfQuestions();
+
+      observer.unobserve(lastElement);
+
+      const questionTextElements = document.querySelectorAll(
+        'p[type="questionText"]'
+      );
+      lastElement = questionTextElements[questionTextElements.length - 1];
+
+      observer.observe(lastElement);
     }
   }
 
   function setupIntersectionObserver() {
     console.log("Setting up Intersection Observer...");
     // Create a new Intersection Observer instance
-    const observer = new IntersectionObserver(handleIntersection, {
-      root: null, // Use the viewport as the root element
-      threshold: 0.1, // Trigger the callback when the target element is 10% visible
-    });
 
     // Observe the last question element
     const questionTextElements = document.querySelectorAll(
       'p[type="questionText"]'
     );
-    const lastElement = questionTextElements[questionTextElements.length - 1];
-    console.log(lastElement)
+    lastElement = questionTextElements[questionTextElements.length - 1];
+    console.log(lastElement);
     observer.observe(lastElement);
-
-    // Check if the observer is currently running
-    console.log("Observer is running:", observer.root !== null);
   }
-
-  onMount(resetBatch);
   onMount(getCourse);
+  onMount(resetBatch);
   onMount(getAllQuestionData);
-
 </script>
 
 <main class="font-sans text-base font-normal text-gray-700 bg-surface-400">
