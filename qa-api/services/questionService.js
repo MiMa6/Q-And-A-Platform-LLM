@@ -1,7 +1,6 @@
 import { sql } from "../database/database.js";
 
 const findQuestionsPerCourseID = async (data) => {
-
   const courseID = data.courseID;
   const batch = data.batch;
 
@@ -133,6 +132,27 @@ const addNewQuesiton = async (data) => {
   const question_text = data.question_text;
 
   try {
+    // Check max 1 answer per minute
+    const lastQuestion = await sql`
+    SELECT * FROM questions
+    WHERE user_uuid = ${userUuid}
+    AND post_time > NOW() - INTERVAL '1 minute'
+    ORDER BY post_time DESC
+    LIMIT 1
+    `;
+
+    if (lastQuestion.length > 0) {
+      console.log("You can only post one question per minute");
+
+      return new Response(
+        JSON.stringify({
+          status: 400,
+          data: "Err",
+        }),
+        { status: 400 }
+      );
+    }
+
     await sql`
     INSERT INTO questions (course_id, user_uuid, question_text)
     VALUES (${courseID}, ${userUuid}, ${question_text})
@@ -143,15 +163,14 @@ const addNewQuesiton = async (data) => {
     `;
 
     console.log("New question added successfully:");
-    return insertedRow;
+    return new Response(
+      JSON.stringify({
+        status: 200,
+      }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error adding new question:", error.message);
-    //return new Response(
-    //  JSON.stringify({
-    //    status: 400,
-    //    data: "Err",
-    //  })
-    //);
     return "err";
   }
 };

@@ -126,8 +126,13 @@
     const jsonData = await responseNewQuestion;
     console.log(jsonData);
 
-    createLlmAnswers(data);
-    getAllQuestionData();
+    if (jsonData.status == 200) {
+      createLlmAnswers(data);
+      getAllQuestionData();
+    } else if (jsonData.status == 400) {
+      console.log("Error posting new question");
+      alert("Error posting new question: You can post Max 1 question per user_uuid per minute")
+    }
   };
 
   const createLlmAnswers = async (data) => {

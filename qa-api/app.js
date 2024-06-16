@@ -79,6 +79,7 @@ const handlePostNewAnswer = async (request) => {
   console.log(answerData);
 
   const answerResponse = await answerService.addNewAnswer(answerData);
+  console.log(answerResponse);
   return answerResponse;
 };
 
@@ -148,6 +149,7 @@ const handlePostQuestions = async (request) => {
   return new Response(JSON.stringify(questions), {
     headers: { "content-type": "application/json" },
   });
+
 };
 
 const handlePostQuestionsVotes = async (request) => {

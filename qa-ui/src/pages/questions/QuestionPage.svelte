@@ -122,8 +122,16 @@
       body: JSON.stringify(data),
     });
     const jsonData = await responseNewAnswer;
+    console.log("Response data from posting new ansewr");
     console.log(jsonData);
-    getAllAnswerData();
+
+    if (jsonData.status === 200) {
+      getAllAnswerData();  
+    } else if (jsonData.status === 400) {
+      console.log("Error posting new answer");
+      alert("Error posting new answer: You can post Max 1 answer per user_uuid per minute");
+    }
+    
   };
 
   const getAllAnswerData = async () => {
@@ -291,7 +299,7 @@
         'p[type="answerText"]'
       );
       lastElement = answerTextElements[answerTextElements.length - 1];
-      
+
       observer.observe(lastElement);
     }
   }
