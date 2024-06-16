@@ -9,7 +9,6 @@ const handleGetRoot = async (request) => {
   return new Response(`Hello from programmin API server`);
 };
 
-
 const handlePostSpecificCourse = async (request) => {
   const requestData = await request.json();
   const courseID = requestData.courseID;
@@ -67,7 +66,6 @@ const handlePostNewQuestion = async (request) => {
   const questionResponse = await questionService.addNewQuesiton(questionData);
   return questionResponse;
 };
-
 
 const handlePostNewAnswer = async (request) => {
   const requestData = await request.json();
@@ -149,7 +147,7 @@ const handlePostQuestions = async (request) => {
 
   return new Response(JSON.stringify(questions), {
     headers: { "content-type": "application/json" },
-  });''
+  });
 };
 
 const handlePostQuestionsVotes = async (request) => {
@@ -182,10 +180,15 @@ const handlePostAnswersVotes = async (request) => {
 
 const handlePostAnswers = async (request) => {
   const requestData = await request.json();
-  const questionID = requestData.questionID;
-  console.log(questionID);
 
-  const answers = await answerService.findAll(questionID);
+  const data = {
+    questionID: requestData.questionID,
+    batch: requestData.batch,
+  };
+
+  console.log(data);
+
+  const answers = await answerService.findAnswersPerQuestionID(data);
 
   return new Response(JSON.stringify(answers), {
     headers: { "content-type": "application/json" },

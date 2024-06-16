@@ -1,11 +1,16 @@
 import { sql } from "../database/database.js";
 
-const findAll = async (id) => {
+const findAnswersPerQuestionID = async (data) => {
+
+  const questionID = data.questionID;
+  const batch = data.batch;
+
   return await sql`
     SELECT * 
     FROM answers
-    WHERE question_id = ${id};
-
+    WHERE question_id = ${questionID}
+    ORDER BY post_time DESC
+    LIMIT ${batch * 20};
   `;
 };
 
@@ -105,4 +110,10 @@ const addNewAnswer = async (data) => {
     return "err";
   }
 };
-export { findAll, addNewAnswer, delAnswer, findAnswerVotesPerQuestionID, vote };
+export {
+  findAnswersPerQuestionID,
+  addNewAnswer,
+  delAnswer,
+  findAnswerVotesPerQuestionID,
+  vote,
+};
