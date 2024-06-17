@@ -126,12 +126,13 @@
     console.log(jsonData);
 
     if (jsonData.status === 200) {
-      getAllAnswerData();  
+      getAllAnswerData();
     } else if (jsonData.status === 400) {
       console.log("Error posting new answer");
-      alert("Error posting new answer: You can post Max 1 answer per user_uuid per minute");
+      alert(
+        "Error posting new answer: You can post Max 1 answer per user_uuid per minute"
+      );
     }
-    
   };
 
   const getAllAnswerData = async () => {
@@ -372,6 +373,11 @@
                   autocomplete="answer_text"
                   placeholder="   Write answer..."
                   class="text-sm text-center block border-0 bg-transparent py-2 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 w-full"
+                  on:keyup={(event) => {
+                    if (event.key === "Enter") {
+                      postNewAnswer();
+                    }
+                  }}
                 />
               </div>
               {#if isLoading}
