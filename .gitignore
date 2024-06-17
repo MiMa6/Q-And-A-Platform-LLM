@@ -6,4 +6,5 @@ Readwise
 .obsidian
 project.env
 projectprod.env
-app-cache
+app-cach
+production-database-data
