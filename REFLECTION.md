@@ -12,8 +12,10 @@ The web app follows a modular architecture, consisting of the following key comp
 
 4. **API Endpoints:** The backend server exposes various RESTful API endpoints to handle operations such as user registration, posting questions - answers, - votes and retrieving data.
     
-6. **Logic flow chart**
+6. **Logic flow chart (below)** 
+
 ![Image Description](/img/other/Q&A-Platform-Logic-Flowchart.png)
+
 # Improvements ideas
 
 ## Functionalities

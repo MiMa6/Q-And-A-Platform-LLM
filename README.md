@@ -24,6 +24,7 @@ There are 2 premade questions that the user can click which leads to the **Quest
 ![coursepage|500](img/app/2-coursepage.jpeg)
 
 In **Course page** we can create new question by writing it to input and clicking "Create new quesition +". This will also make API request to LLM endpoint which generates 3 answers to question.
+
 ![coursepage|500](img/app/3-coursepage.jpeg)
 
 Now we can see our question is listed at the top of old questions. UI also informs that "Generating LLM answers...". Lets wait for that and after move to the **question page** by clicking "What is JavaScript?"
@@ -39,6 +40,7 @@ Here we can see the generated LLM answers as well as generate new ones. We also 
 Yes! now we can see our answer in UI
 
 ![coursepage|500](img/app/6-questionpage.jpeg)
+
 ## Other notes
 
 ### LLM endpoint
