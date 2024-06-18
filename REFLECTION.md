@@ -4,7 +4,7 @@
 
 The web app follows a modular architecture, consisting of the following key components:
 
-1. **User Interface (UI) - qa-ui:** The front-end of the application is built using the Astro + Svelte framework combination. It provides a responsive and intuitive user interface for seamless navigation and interaction.
+1. **User Interface (UI) - qa-ui:** The front-end of the application is built using the Astro + Svelte framework combination. It provides a responsive and intuitive user interface for seamless navigation and interaction. The design of the UI is made using Tailwind.
     
 2. **Backend Server - qa-api:** The backend server is implemented using Deno and It handles requests from the UI, processes data, and interacts with the database.
     
@@ -14,7 +14,7 @@ The web app follows a modular architecture, consisting of the following key comp
     
 6. **Logic flow chart (below)** 
 
-![Image Description](/img/other/Q&A-Platform-Logic-Flowchart.png)
+<img src="img/other/Q&A-Platform-Logic-Flowchart.png" alt="drawing" width="1000"/>
 
 # Improvements ideas
 

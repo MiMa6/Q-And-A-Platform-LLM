@@ -9,37 +9,42 @@ There are two premade courses (topics) to discuss about
 1. Full Stack Open (Helsinki University)
 2. Designing and Building Scalable Web Applications (Aalto University)
 
+## Other info
+
+* Architecture and improvements -> [Reflection.md](REFLECTION.md)
+* Running app and testsing -> [Running.md](RUNNING.md)
+
 ## Example usage of app
 
 ### Main page
 
 First, open the **Main page** that lists premade courses (topics). By clicking the "Full Stack Open" we get to the **Course Page**. 
 
-![mainpage|500](img/app/1-mainpage.jpeg)
+<img src="img/app/1-mainpage.jpeg" alt="drawing" width="600"/>
 
 ### Course page
 
 There are 2 premade questions that the user can click which leads to the **Question page**. Users can also vote questions and delete their questions but not other users.
 
-![coursepage|500](img/app/2-coursepage.jpeg)
+<img src="img/app/2-coursepage.jpeg" alt="drawing" width="600"/>
 
 In **Course page** we can create new question by writing it to input and clicking "Create new quesition +". This will also make API request to LLM endpoint which generates 3 answers to question.
 
-![coursepage|500](img/app/3-coursepage.jpeg)
+<img src="img/app/3-coursepage.jpeg" alt="drawing" width="600"/>
 
 Now we can see our question is listed at the top of old questions. UI also informs that "Generating LLM answers...". Lets wait for that and after move to the **question page** by clicking "What is JavaScript?"
 
-![coursepage|500](img/app/4-coursepage.jpeg)
+<img src="img/app/4-coursepage.jpeg" alt="drawing" width="600"/>
 
 ### Question page
 
 Here we can see the generated LLM answers as well as generate new ones. We also see other user-made answers and can create our own answers. Let's create "I think it is programming language" by typing it to input and after that clicking "Create new Answer +"
 
-![coursepage|500](img/app/5-questionpage.jpeg)
+<img src="img/app/5-questionpage.jpeg" alt="drawing" width="600"/>
 
 Yes! now we can see our answer in UI
 
-![coursepage|500](img/app/6-questionpage.jpeg)
+<img src="img/app/6-questionpage.jpeg" alt="drawing" width="600"/>
 
 ## Other notes
 
