@@ -28,12 +28,6 @@ const handleGetCourses = async (request) => {
 };
 
 const handleGetCourseIds = async (request) => {
-  //const headers = new Headers();
-  //headers.set("Access-Control-Allow-Origin", allowedOrigin);
-  //headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Adjust as needed
-  //headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Adjust as needed
-  //headers.set("content-type", "application/json"); // Adjust as needed
-
   const courseIds = await courseService.findAllIds();
   console.log(courseIds);
 
