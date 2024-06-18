@@ -1,10 +1,17 @@
-TODO: The RUNNING.md outlines steps needed to run the application separately for the development mode and the production mode.
+## Run - Q&A Platform 
+### Pre configurations for MacBook M1 users
 
-TODO: For merits, the RUNNING.md also outlines the steps needed to use Kubernetes to run the application with Minikube (or somilar), using kubernetes configuration files created as parts of the passing with merits requirements
+Change the first line of **qa-api/Dockerfile** & **qa-api/Dockerfile.prod** like below
 
-## Testing - Playwright
+```js
+FROM denoland/deno:alpine-1.31.0
+```
+to
+```js
+FROM lukechannings/deno:v1.37.0
+```
 
-### Runnin app with development configurations
+### Running app with development configurations
 
 ```bash
 docker compose up
@@ -13,15 +20,21 @@ docker compose up
 ### Running app with production configurations
 
 #### Pre steps
-1. Create copy of project.env and rename it pr
+1. Create copy of project.env and rename it projectprod.env
 2. Change FLYWAY_URL and PGHOST to following:
- * FLYWAY_URL=jdbc:postgresql://database-server-edulearn-prod/database 
-* PGHOST=database-server-edulearn-prod
+ 
+ ```env
+ FLYWAY_URL=jdbc:postgresql://database-server-edulearn-prod/database
+ PGHOST=database-server-edulearn-prod
+ ```
+
+then...
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d
 ```
 
+## Testing - Playwright
 ### Running all tests
 
 ```bash
