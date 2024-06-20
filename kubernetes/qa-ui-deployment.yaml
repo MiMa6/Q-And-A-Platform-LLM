@@ -18,7 +18,7 @@ spec:
           image: qa-ui:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 7777
+            - containerPort: 7000
           resources:
             requests:
               cpu: 100m
