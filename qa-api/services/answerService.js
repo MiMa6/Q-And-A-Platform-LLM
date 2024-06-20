@@ -93,11 +93,12 @@ const addNewAnswer = async (data) => {
   const answer_text = data.answer_text;
 
   try {
-    // Check max 1 answer per minute
+    // Check max 1 answer per minute (id > 12 so that the premade 12 questions are not counted)
     const lastAnswer = await sql`
     SELECT * FROM answers
     WHERE user_uuid = ${userUuid}
     AND post_time > NOW() - INTERVAL '1 minute'
+    AND id > 12 
     ORDER BY post_time DESC
     LIMIT 1
   `;

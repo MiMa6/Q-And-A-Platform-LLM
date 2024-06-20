@@ -132,7 +132,7 @@ const addNewQuesiton = async (data) => {
   const question_text = data.question_text;
 
   try {
-    // Check max 1 answer per minute (id > 4 so that the first 4 questions are not counted)
+    // Check max 1 answer per minute (id > 4 so that the premade 4 questions are not counted)
     const lastQuestion = await sql`
     SELECT * FROM questions
     WHERE user_uuid = ${userUuid}
