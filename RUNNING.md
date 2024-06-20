@@ -41,6 +41,22 @@ docker compose -f docker-compose.prod.yml up -d
 docker compose run --rm --entrypoint=npx playwright playwright test
 ```
 
+### Running with kubernetes configuration
+
+#### Installation 
+
+1. Download minikube from https://minikube.sigs.k8s.io/docs/start amnd follow instructions for getting started
+2. Install kbectl from https://kubernetes.io/docs/tasks/tools/ 
+3. Install CloudNatibePG operator
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.19/releases/cnpg-1.19.1.yaml
+```
+
+#### Setup
+
+
+
 ### Running test files one by one
 
 ```bash

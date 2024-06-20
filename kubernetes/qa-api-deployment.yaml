@@ -24,3 +24,10 @@ spec:
               cpu: 100m
             limits:
               cpu: 200m
+          env:
+            - name: PGPASS
+              valueFrom:
+                secretKeyRef:
+                  name: qa-api-database-cluster-app
+                  key: pgpass
+                  optional: false
