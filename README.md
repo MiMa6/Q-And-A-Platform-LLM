@@ -12,7 +12,7 @@ There are two premade courses (topics) to discuss about
 ## Other info
 
 * Architecture and improvements -> [Reflection.md](REFLECTION.md)
-* Running app and testsing -> [Running.md](RUNNING.md)
+* Running app and testing -> [Running.md](RUNNING.md)
 
 ## Example usage of app
 
