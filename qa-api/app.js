@@ -77,7 +77,22 @@ const handlePostNewAnswer = async (request) => {
   return answerResponse;
 };
 
-const handlePostDeleteQuestion = async (request) => {
+const handlePostDelQuestion = async (request) => {
+  const requestData = await request.json();
+
+  const questionData = {
+    courseID: requestData.courseID,
+    userUuid: requestData.userUuid,
+    question_text: requestData.question_text,
+  };
+
+  console.log(questionData);
+
+  const questionResponse = await questionService.delQuestion(questionData);
+  return questionResponse;
+};
+
+const handlePostDeleteQuestionById = async (request) => {
   const requestData = await request.json();
 
   const questionData = {
@@ -86,7 +101,9 @@ const handlePostDeleteQuestion = async (request) => {
 
   console.log(questionData);
 
-  const questionResponse = await questionService.delQuestion(questionData);
+  const questionResponse = await questionService.delQuestionByQuestionID(
+    questionData
+  );
   return questionResponse;
 };
 
@@ -143,7 +160,6 @@ const handlePostQuestions = async (request) => {
   return new Response(JSON.stringify(questions), {
     headers: { "content-type": "application/json" },
   });
-
 };
 
 const handlePostQuestionsVotes = async (request) => {
@@ -256,8 +272,13 @@ const urlMapping = [
   },
   {
     method: "POST",
+    pattern: new URLPattern({ pathname: "/question/delete" }),
+    fn: handlePostDelQuestion,
+  },
+  {
+    method: "POST",
     pattern: new URLPattern({ pathname: "/question/del" }),
-    fn: handlePostDeleteQuestion,
+    fn: handlePostDeleteQuestionById,
   },
   {
     method: "POST",

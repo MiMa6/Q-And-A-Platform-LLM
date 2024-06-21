@@ -91,7 +91,36 @@ const vote = async (data) => {
   `;
 };
 
-const delQuestion = async (data) => {
+const delQuestion = async function (data) {
+  const courseID = data.courseID;
+  const userUuid = data.userUuid;
+  const question_text = data.question_text;
+  try {
+    await sql`
+    DELETE FROM questions
+    WHERE course_id = ${courseID}
+    AND user_uuid = ${userUuid}
+    AND question_text = ${question_text}
+    `;
+    console.log("Question deleted successfully:");
+    return new Response(
+      JSON.stringify({
+        status: 200,
+        data: "Question deleted successfully",
+      })
+    );
+  } catch (error) {
+    console.error("Error deleting question:", error.message);
+    return new Response(
+      JSON.stringify({
+        status: 400,
+        data: "Err",
+      })
+    );
+  }
+};
+
+const delQuestionByQuestionID = async (data) => {
   const questionID = data.questionID;
 
   try {
@@ -214,5 +243,6 @@ export {
   vote,
   addNewQuesiton,
   delQuestion,
+  delQuestionByQuestionID,
   updateQuesitonLlm,
 };
