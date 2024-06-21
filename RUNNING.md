@@ -51,7 +51,10 @@ docker-compose run --rm --entrypoint=npx playwright playwright test mainpage.spe
 docker-compose run --rm --entrypoint=npx playwright playwright test coursepage.spec.js
 docker-compose run --rm --entrypoint=npx playwright playwright test questionpage.spec.js
 ```
+## Testing - k6
 
+### Pre steps
+1. Install k6 from here -> https://k6.io/docs/get-started/installation/
 
 ## Running app with kubernetes configuration
 
