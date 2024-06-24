@@ -2,7 +2,7 @@
 
 1. courses
 2. questions
-3. question_bvotes
+3. question_votes
 4. answers
 5. answer_votes
 ___
