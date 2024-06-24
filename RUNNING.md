@@ -228,3 +228,61 @@ minikube service nginx --url
 All finished, GJ🤝🏾
 
 <img src="img/kube/kubernetes-setup-completed.png" alt="drawing" width="600"/>
+
+### Monitoring kubernetes with Grafana and Prome
+
+#### Deploying the Prometheus Operator
+
+Instruction from article: [How to monitor Kubernetes clusters with the Prometheus Operator](https://grafana.com/blog/2023/01/19/how-to-monitor-kubernetes-clusters-with-the-prometheus-operator/)
+
+Run following to deploy Prometheus Operator CRD
+```bash
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml --force-conflicts=true --server-side=true
+```
+
+
+install role-based access control (RBAC) permissions to allow the Prometheus server to access the Kubernetes API to scrape targets and gain access to the Alertmanager cluster.
+```bash
+kubectl apply -f kubernetes/prometheus_rbac.yaml
+```
+
+Deploying Prometheus
+
+Create a Prometheus instance
+```bash
+kubectl apply -f kubernetes/prometheus_instance.yaml
+```
+
+Forward local port to Prometheus servicce
+
+```bash
+ kubectl port-forward svc/prometheus-operated 9090:9090
+ ```
+
+Create a ServiceMonitor CRD
+
+```bash
+kubectl apply -f kubernetes/prometheus_service_monitor.yaml
+```
+
+Deploy grafana in kubernetes
+
+```bash
+kubectl create deployment grafana --image=docker.io/grafana/grafana:latest 
+```
+
+Create service for grafana 
+```bash
+kubectl expose deployment grafana --port 3000
+```
+
+Forward to the port 3000
+```Bash
+kubectl port-forward svc/grafana 3000:3000
+```
+
+NodePort for prometheus
+```bash
+kubectl apply -f kubernetes/expose_prometheus.yaml
+````
+Follow last chapter of the blog before conclusion for  "Creating a Grafana dashboard to monitor Kubernetes events"
