@@ -12,6 +12,19 @@ to
 FROM lukechannings/deno:v1.37.0
 ```
 
+## Build images
+
+```bash
+cd llm-api
+docker build -t llm-api .
+cd ..
+```
+```bash
+cd playwright
+docker build -t e2e-playwright .
+cd ..
+```
+
 ## Running app with development configurations
 
 ```bash

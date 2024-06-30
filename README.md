@@ -1,5 +1,7 @@
 # EduLearn - Q&A Platform
 
+[GITHUB](https://github.com/MiMa6/Q-And-A-Platform-LLM)
+
 ## Description
 
 This Web App named "EduLearn - Q&A Platform" is designed to facilitate knowledge sharing and collaboration among web development practioners. It allows users to post questions, provide answers, and engage in discussions on various topics. 
